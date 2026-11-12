@@ -1,0 +1,304 @@
+/* ==========================================================================
+   JASHVIORA – Premium Beauty, Fashion & Lifestyle Styling System
+   Brand Colors:
+   - Cream:      #FFF9F2
+   - Beige:      #E9DCCF
+   - Blush pink: #EBCFD0
+   - Dark brown: #49372F
+   - White:      #FFFFFF
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --cream: #FFF9F2;
+  --cream-light: #FFFDF9;
+  --beige: #E9DCCF;
+  --beige-dark: #D4C3B2;
+  --blush: #EBCFD0;
+  --blush-light: #F7EAEB;
+  --dark-brown: #49372F;
+  --dark-brown-hover: #382923;
+  --gold: #C5A059;
+  --gold-light: #DFBA71;
+  --white: #FFFFFF;
+  
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-accent: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  background-color: var(--cream);
+  color: var(--dark-brown);
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--cream);
+  color: var(--dark-brown);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--beige-dark);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-brown);
+}
+
+/* Typography Helpers */
+.font-serif {
+  font-family: var(--font-serif);
+}
+.font-accent {
+  font-family: var(--font-accent);
+}
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.tracking-editorial {
+  letter-spacing: 0.18em;
+}
+.tracking-wide-editorial {
+  letter-spacing: 0.25em;
+}
+
+/* Glassmorphism Navigation */
+.header-glass {
+  background: rgba(255, 249, 242, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(233, 220, 207, 0.8);
+}
+
+/* Card Animations & Shadow */
+.luxury-card {
+  background: var(--white);
+  border: 1px solid var(--beige);
+  border-radius: 1rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px -2px rgba(73, 55, 47, 0.04);
+}
+.luxury-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--blush);
+  box-shadow: 0 16px 36px -4px rgba(73, 55, 47, 0.1);
+}
+
+.collection-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid var(--beige);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px -5px rgba(73, 55, 47, 0.08);
+}
+.collection-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -8px rgba(73, 55, 47, 0.16);
+  border-color: var(--blush);
+}
+.collection-card:hover .collection-img {
+  transform: scale(1.06);
+}
+.collection-img {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Step Flow Indicators */
+.step-card {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--beige);
+  border-radius: 1.25rem;
+  transition: all 0.35s ease;
+}
+.step-card:hover {
+  border-color: var(--dark-brown);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -4px rgba(73, 55, 47, 0.09);
+}
+
+/* Luxury Button System */
+.btn-primary {
+  background-color: var(--dark-brown);
+  color: var(--cream);
+  border: 1px solid var(--dark-brown);
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background-color: #362822;
+  border-color: #362822;
+  box-shadow: 0 8px 20px -4px rgba(73, 55, 47, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--white);
+  color: var(--dark-brown);
+  border: 1px solid var(--beige);
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  border-color: var(--dark-brown);
+  background-color: var(--cream);
+  transform: translateY(-1px);
+}
+
+.btn-blush {
+  background-color: var(--blush);
+  color: var(--dark-brown);
+  border: 1px solid var(--blush);
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.btn-blush:hover {
+  background-color: #e2bebf;
+  border-color: #e2bebf;
+  transform: translateY(-1px);
+}
+
+/* Pinterest Masonry Styling */
+.masonry-grid {
+  column-count: 1;
+  column-gap: 1.5rem;
+}
+@media (min-width: 640px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+@media (min-width: 1024px) {
+  .masonry-grid {
+    column-count: 3;
+  }
+}
+@media (min-width: 1280px) {
+  .masonry-grid {
+    column-count: 4;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid var(--beige);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.masonry-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -4px rgba(73, 55, 47, 0.12);
+  border-color: var(--blush);
+}
+.masonry-item:hover .pin-overlay {
+  opacity: 1;
+}
+.pin-overlay {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Store Badges */
+.badge-amazon {
+  background-color: #232f3e;
+  color: #ff9900;
+}
+.badge-nykaa {
+  background-color: #fc2779;
+  color: #ffffff;
+}
+.badge-myntra {
+  background-color: #ff3f6c;
+  color: #ffffff;
+}
+.badge-flipkart {
+  background-color: #2874f0;
+  color: #ffffff;
+}
+.badge-meesho {
+  background-color: #8b2671;
+  color: #ffffff;
+}
+.badge-custom {
+  background-color: var(--dark-brown);
+  color: var(--cream);
+}
+
+/* Modal Backdrops */
+.modal-backdrop {
+  background: rgba(73, 55, 47, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Soft Ribbon / Decorative Tag */
+.editorial-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  background: rgba(235, 207, 208, 0.45);
+  border: 1px solid rgba(233, 220, 207, 0.9);
+  color: var(--dark-brown);
+  font-weight: 600;
+}

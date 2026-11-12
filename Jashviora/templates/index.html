@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JASHVIORA — Discover Your Style, Create Your World</title>
+  <meta name="description" content="JASHVIORA is a curated lifestyle discovery platform for luxury beauty, traditional & modern fashion, minimal jewellery, and warm aesthetic home decor." />
+  
+  <!-- Favicon / Logo Symbol -->
+  <link rel="icon" type="image/svg+xml" href="/assets/logo-icon.svg" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: {
+              DEFAULT: '#FFF9F2',
+              light: '#FFFDF9',
+              dark: '#F5EBE1',
+            },
+            beige: {
+              DEFAULT: '#E9DCCF',
+              light: '#F2E8DC',
+              dark: '#D8C5B3',
+            },
+            blush: {
+              DEFAULT: '#EBCFD0',
+              light: '#F5E4E5',
+              dark: '#DCB5B6',
+            },
+            darkbrown: {
+              DEFAULT: '#49372F',
+              light: '#654F44',
+              dark: '#342620',
+            },
+            gold: {
+              DEFAULT: '#C5A059',
+              light: '#DFC184',
+              dark: '#A6823B',
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            accent: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- React 18 & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="bg-[#FFF9F2] text-[#49372F] selection:bg-[#EBCFD0] selection:text-[#49372F]">
+  <div id="root"></div>
+
+  <!-- React Application Logic -->
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useRef } = React;
+
+    // Default Seed Products (Used as fallback if API server is offline)
+    const DEFAULT_PRODUCTS = [
+      {
+        id: "jv-p-1",
+        title: "12-Piece Champagne & Rose Gold Brush Set",
+        category: "Beauty",
+        categoryLabel: "Beauty & Makeup",
+        price: 1699,
+        originalPrice: 2499,
+        store: "Amazon India",
+        storeBadgeColor: "#232f3e",
+        externalUrl: "https://www.amazon.in/s?k=makeup+brush+set+champagne+rose+gold",
+        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/beauty.jpg",
+        description: "Feather-soft vegan synthetic bristles with champagne metallic ferrules and luxury velvet travel pouch.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.9,
+        reviewsCount: 238,
+        tags: ["Brushes", "Vanity", "Vegan"]
+      },
+      {
+        id: "jv-p-2",
+        title: "Velvet Silk Matte Lip Rouge (Rose Petal)",
+        category: "Beauty",
+        categoryLabel: "Beauty & Makeup",
+        price: 899,
+        originalPrice: 1200,
+        store: "Nykaa",
+        storeBadgeColor: "#fc2779",
+        externalUrl: "https://www.nykaa.com/search/result/?q=velvet+matte+nude+lipstick",
+        image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/beauty.jpg",
+        description: "Infused with cold-pressed rosehip seed oil and vitamin E for a non-drying, plush pillow-soft finish.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.8,
+        reviewsCount: 512,
+        tags: ["Lips", "Matte", "Hydrating"]
+      },
+      {
+        id: "jv-p-3",
+        title: "Dewy Botanical Serum & Rose Quartz Roller",
+        category: "Beauty",
+        categoryLabel: "Beauty & Makeup",
+        price: 1450,
+        originalPrice: 1950,
+        store: "Nykaa",
+        storeBadgeColor: "#fc2779",
+        externalUrl: "https://www.nykaa.com/search/result/?q=hyaluronic+serum+rose+quartz+roller",
+        image: "https://images.unsplash.com/photo-1608248597359-0026e6328328?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/beauty.jpg",
+        description: "Concentrated 5-weight hyaluronic acid paired with an authentic Brazilian rose quartz facial roller for lymphatic drainage.",
+        isTrending: false,
+        isFeatured: false,
+        rating: 4.9,
+        reviewsCount: 174,
+        tags: ["Skincare", "Glow", "Ritual"]
+      },
+      {
+        id: "jv-p-4",
+        title: "Sunlit Champagne Mineral Highlighter Compact",
+        category: "Beauty",
+        categoryLabel: "Beauty & Makeup",
+        price: 1199,
+        originalPrice: 1599,
+        store: "Amazon India",
+        storeBadgeColor: "#232f3e",
+        externalUrl: "https://www.amazon.in/s?k=champagne+highlighter+palette",
+        image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/beauty.jpg",
+        description: "Micro-milled multidimensional pearls that melt into skin for an ethereal, lit-from-within candlelight glow.",
+        isTrending: true,
+        isFeatured: false,
+        rating: 4.7,
+        reviewsCount: 89,
+        tags: ["Highlighter", "Glow", "Clean Beauty"]
+      },
+      {
+        id: "jv-p-5",
+        title: "Pastel Lilac Embroidered Punjabi Suit Set",
+        category: "Fashion",
+        categoryLabel: "Fashion & Dresses",
+        price: 4899,
+        originalPrice: 6999,
+        store: "Myntra",
+        storeBadgeColor: "#ff3f6c",
+        externalUrl: "https://www.myntra.com/chikankari-suit",
+        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        description: "Delicate threadwork with hand-embroidered mirror accents, sheer organza scalloped dupatta and silk trousers.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.9,
+        reviewsCount: 342,
+        tags: ["Ethnic", "Punjabi Suit", "Festive"]
+      },
+      {
+        id: "jv-p-6",
+        title: "Ivory & Gold Zari Flared Anarkali Gown",
+        category: "Fashion",
+        categoryLabel: "Fashion & Dresses",
+        price: 6250,
+        originalPrice: 8500,
+        store: "Myntra",
+        storeBadgeColor: "#ff3f6c",
+        externalUrl: "https://www.myntra.com/anarkali-suit",
+        image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        description: "Regal flared georgette silhouette with traditional gold gota patti and delicate woven border detailing.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.9,
+        reviewsCount: 195,
+        tags: ["Anarkali", "Occasion", "Ivory"]
+      },
+      {
+        id: "jv-p-7",
+        title: "Blush Tiered Floral Summer Silk Dress",
+        category: "Fashion",
+        categoryLabel: "Fashion & Dresses",
+        price: 2750,
+        originalPrice: 3499,
+        store: "Flipkart",
+        storeBadgeColor: "#2874f0",
+        externalUrl: "https://www.flipkart.com/search?q=floral+tiered+dress",
+        image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        description: "Breezy romantic tiered dress in soft mulmul silk with romantic puff sleeves and subtle self-tie waist.",
+        isTrending: false,
+        isFeatured: false,
+        rating: 4.6,
+        reviewsCount: 118,
+        tags: ["Dress", "Blush", "Minimalist"]
+      },
+      {
+        id: "jv-p-8",
+        title: "Hand-Woven Neutral Linen Relaxed Co-ord",
+        category: "Fashion",
+        categoryLabel: "Fashion & Dresses",
+        price: 2499,
+        originalPrice: 3299,
+        store: "Meesho",
+        storeBadgeColor: "#8b2671",
+        externalUrl: "https://www.meesho.com/search?q=linen+co-ord+set",
+        image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        description: "Effortless wide-leg trousers paired with an oversized notch collar shirt in unbleached organic linen.",
+        isTrending: false,
+        isFeatured: true,
+        rating: 4.7,
+        reviewsCount: 86,
+        tags: ["Linen", "Co-ord", "Casual Luxury"]
+      },
+      {
+        id: "jv-p-9",
+        title: "18K Gold Plated Ribbed Croissant Hoops",
+        category: "Jewellery",
+        categoryLabel: "Jewellery",
+        price: 1299,
+        originalPrice: 1899,
+        store: "Amazon India",
+        storeBadgeColor: "#232f3e",
+        externalUrl: "https://www.amazon.in/s?k=gold+croissant+hoop+earrings",
+        image: "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/jewellery.jpg",
+        description: "Lightweight hollow architectural design with waterproof 18-karat gold PVD vermeil finish.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.9,
+        reviewsCount: 412,
+        tags: ["Earrings", "Gold Vermeil", "Everyday"]
+      },
+      {
+        id: "jv-p-10",
+        title: "Minimal Herringbone Liquid Snake Chain",
+        category: "Jewellery",
+        categoryLabel: "Jewellery",
+        price: 1499,
+        originalPrice: 2100,
+        store: "Myntra",
+        storeBadgeColor: "#ff3f6c",
+        externalUrl: "https://www.myntra.com/gold-chain-necklace",
+        image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/jewellery.jpg",
+        description: "Ultra-sleek 4mm liquid-shine flat snake weave that lays flat against collarbones for effortless layering.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.8,
+        reviewsCount: 304,
+        tags: ["Necklace", "Minimal", "Layering"]
+      },
+      {
+        id: "jv-p-11",
+        title: "Natural Baroque Pearl Drop Pendant & Paperclip Chain",
+        category: "Jewellery",
+        categoryLabel: "Jewellery",
+        price: 1750,
+        originalPrice: 2400,
+        store: "Nykaa",
+        storeBadgeColor: "#fc2779",
+        externalUrl: "https://www.nykaa.com/search/result/?q=baroque+pearl+necklace",
+        image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/jewellery.jpg",
+        description: "One-of-a-kind freshwater baroque pearl suspended gracefully on a hypoallergenic gold paperclip chain.",
+        isTrending: false,
+        isFeatured: false,
+        rating: 4.9,
+        reviewsCount: 97,
+        tags: ["Pearl", "Handmade", "Statement"]
+      },
+      {
+        id: "jv-p-12",
+        title: "Dainty Twisted Gold Huggie Trio Set",
+        category: "Jewellery",
+        categoryLabel: "Jewellery",
+        price: 1150,
+        originalPrice: 1699,
+        store: "Flipkart",
+        storeBadgeColor: "#2874f0",
+        externalUrl: "https://www.flipkart.com/search?q=gold+huggie+earrings+set",
+        image: "https://images.unsplash.com/photo-1611591475155-428522964e52?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/jewellery.jpg",
+        description: "Three graduated micro-twisted huggies designed for ear curation, cartilage, and upper lobe wear.",
+        isTrending: true,
+        isFeatured: false,
+        rating: 4.7,
+        reviewsCount: 162,
+        tags: ["Huggies", "Stack", "Waterproof"]
+      },
+      {
+        id: "jv-p-13",
+        title: "Pleated Shade Ribbed Ceramic Table Lamp",
+        category: "Home Decor",
+        categoryLabel: "Home Decor",
+        price: 2899,
+        originalPrice: 3899,
+        store: "Amazon India",
+        storeBadgeColor: "#232f3e",
+        externalUrl: "https://www.amazon.in/s?k=ceramic+ribbed+table+lamp+pleated",
+        image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        description: "Stoneware ribbed base in warm oatmeal finish paired with a retro accordion pleated parchment shade.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.9,
+        reviewsCount: 281,
+        tags: ["Lighting", "Warm Glow", "Aesthetic"]
+      },
+      {
+        id: "jv-p-14",
+        title: "Wavy Irregular Edge Vanity Accent Mirror",
+        category: "Home Decor",
+        categoryLabel: "Home Decor",
+        price: 2450,
+        originalPrice: 3200,
+        store: "Amazon India",
+        storeBadgeColor: "#232f3e",
+        externalUrl: "https://www.amazon.in/s?k=wavy+frameless+mirror",
+        image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        description: "Sculptural organic wavy silhouette with beveled polished borders, perfect for entryway console or vanity table.",
+        isTrending: true,
+        isFeatured: true,
+        rating: 4.8,
+        reviewsCount: 193,
+        tags: ["Mirror", "Organics", "Vanity"]
+      },
+      {
+        id: "jv-p-15",
+        title: "Scented Soy Candle in Amber Glass & Sandalwood",
+        category: "Home Decor",
+        categoryLabel: "Home Decor",
+        price: 799,
+        originalPrice: 1100,
+        store: "Nykaa",
+        storeBadgeColor: "#fc2779",
+        externalUrl: "https://www.nykaa.com/search/result/?q=scented+soy+candle+sandalwood",
+        image: "https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        description: "Hand-poured 100% natural soy wax with wood wick crackle, infused with warm amber, cedarwood and cashmere vanilla.",
+        isTrending: false,
+        isFeatured: false,
+        rating: 4.9,
+        reviewsCount: 356,
+        tags: ["Candle", "Aromatherapy", "Cozy"]
+      },
+      {
+        id: "jv-p-16",
+        title: "Nordic Hollow Donut Ceramic Vase (Sandy Beige)",
+        category: "Home Decor",
+        categoryLabel: "Home Decor",
+        price: 1350,
+        originalPrice: 1850,
+        store: "Flipkart",
+        storeBadgeColor: "#2874f0",
+        externalUrl: "https://www.flipkart.com/search?q=ceramic+donut+vase",
+        image: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        description: "Matte unglazed stoneware with architectural circular geometry, stunning with dried pampas grass or eucalyptus.",
+        isTrending: true,
+        isFeatured: false,
+        rating: 4.7,
+        reviewsCount: 148,
+        tags: ["Ceramics", "Vase", "Minimalist"]
+      },
+      {
+        id: "jv-p-17",
+        title: "Pre-Washed Waffle Weave Cotton Bed Throw",
+        category: "Home Decor",
+        categoryLabel: "Home Decor",
+        price: 1899,
+        originalPrice: 2600,
+        store: "Meesho",
+        storeBadgeColor: "#8b2671",
+        externalUrl: "https://www.meesho.com/search?q=cotton+waffle+bed+throw",
+        image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        description: "Breathable honeycomb textured pure cotton in rich cream with delicate fringe tassels for relaxed bed styling.",
+        isTrending: false,
+        isFeatured: false,
+        rating: 4.8,
+        reviewsCount: 92,
+        tags: ["Textiles", "Bedding", "Comfort"]
+      }
+    ];
+
+    const DEFAULT_PINS = [
+      {
+        id: "pin-1",
+        title: "Golden Hour Glass Skin & Nude Rose Lip Glaze",
+        category: "Makeup looks",
+        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/beauty.jpg",
+        likes: 1420,
+        curator: "Curated by Jashviora Beauty",
+        link: "https://www.nykaa.com/",
+        tags: ["#GlassSkin", "#CleanGirl", "#DewyGlow"]
+      },
+      {
+        id: "pin-2",
+        title: "Pastel Chikankari Kurta with Baroque Pearl Jhumkas",
+        category: "Outfit inspiration",
+        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        likes: 2890,
+        curator: "Festive Edit 2026",
+        link: "https://www.myntra.com/",
+        tags: ["#Chikankari", "#PastelFestive", "#IndianFashion"]
+      },
+      {
+        id: "pin-3",
+        title: "The Daily 18K Gold Snake Chain & Ribbed Hoop Layering",
+        category: "Jewellery styling",
+        image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/jewellery.jpg",
+        likes: 980,
+        curator: "Capsule Wardrobe Essentials",
+        link: "https://www.amazon.in/",
+        tags: ["#GoldJewellery", "#LayeredNecklace", "#EarCuration"]
+      },
+      {
+        id: "pin-4",
+        title: "Warm Beige Sanctuary: Arched Headboard & Linen Drapes",
+        category: "Bedroom decoration",
+        image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        likes: 3150,
+        curator: "Jashviora Home Atelier",
+        link: "https://www.amazon.in/",
+        tags: ["#BeigeAesthetic", "#DreamBedroom", "#CozyMinimalism"]
+      },
+      {
+        id: "pin-5",
+        title: "Sunday Morning Matcha, Silk Robe & Gratitude Journal",
+        category: "Aesthetic lifestyle ideas",
+        image: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        likes: 1760,
+        curator: "Slow Living Journal",
+        link: "https://www.pinterest.com/",
+        tags: ["#SlowLiving", "#MorningRitual", "#Mindfulness"]
+      },
+      {
+        id: "pin-6",
+        title: "Candlelit Nightstand Styling with Ceramic Donut Vase",
+        category: "Bedroom decoration",
+        image: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        likes: 840,
+        curator: "Evening Sanctuary",
+        link: "https://www.flipkart.com/",
+        tags: ["#NightstandAesthetic", "#WarmLight", "#Ceramics"]
+      },
+      {
+        id: "pin-7",
+        title: "Monochrome Cream Linen Suit & Structured Bag",
+        category: "Outfit inspiration",
+        image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        likes: 2140,
+        curator: "Street Style Elegance",
+        link: "https://www.myntra.com/",
+        tags: ["#Monochrome", "#LinenStyle", "#OldMoneyAesthetic"]
+      },
+      {
+        id: "pin-8",
+        title: "Vanity Flat Lay: Eau de Parfum, Silk Scrunchie & Lip Oil",
+        category: "Makeup looks",
+        image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/beauty.jpg",
+        likes: 1630,
+        curator: "Vanity Details",
+        link: "https://www.nykaa.com/",
+        tags: ["#VanityGoals", "#LuxuryBeauty", "#Perfume"]
+      },
+      {
+        id: "pin-9",
+        title: "Regal Kundan Choker with Raw Silk Blush Lehenga",
+        category: "Jewellery styling",
+        image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/fashion.jpg",
+        likes: 3890,
+        curator: "Indian Wedding Series",
+        link: "https://www.nykaa.com/",
+        tags: ["#KundanJewellery", "#BridalInspo", "#HeritageLuxe"]
+      },
+      {
+        id: "pin-10",
+        title: "Aesthetic Coffee Table Art Books & Neutral Trays",
+        category: "Aesthetic lifestyle ideas",
+        image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=700&auto=format&fit=crop&q=80",
+        fallbackImage: "/assets/collections/home-decor.jpg",
+        likes: 1290,
+        curator: "Interior Moodboard",
+        link: "https://www.amazon.in/",
+        tags: ["#CoffeeTableStyling", "#ArtBooks", "#LivingRoom"]
+      }
+    ];
+
+    // Main React Application
+    function App() {
+      // Products state
+      const [products, setProducts] = useState(() => {
+        const saved = localStorage.getItem('jv_products');
+        if (saved) {
+          try { return JSON.parse(saved); } catch(e) {}
+        }
+        return DEFAULT_PRODUCTS;
+      });
+
+      // Pins state
+      const [pins, setPins] = useState(DEFAULT_PINS);
+
+      // Filtering state
+      const [selectedCategory, setSelectedCategory] = useState("All");
+      const [selectedStore, setSelectedStore] = useState("All");
+      const [searchQuery, setSearchQuery] = useState("");
+      const [sortBy, setSortBy] = useState("trending");
+
+      // Pins category
+      const [pinCategory, setPinCategory] = useState("All");
+
+      // Wishlist state
+      const [wishlist, setWishlist] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem('jv_wishlist') || '[]');
+        } catch(e) { return []; }
+      });
+
+      // UI Modals & Navigation
+      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+      const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+      const [isSearchOpen, setIsSearchOpen] = useState(false);
+      const [isAdminView, setIsAdminView] = useState(false);
+      const [quickViewProduct, setQuickViewProduct] = useState(null);
+      const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+      const [isAffiliateModalOpen, setIsAffiliateModalOpen] = useState(false);
+
+      // Admin Editing State
+      const [editingProduct, setEditingProduct] = useState(null);
+      const [adminForm, setAdminForm] = useState({
+        title: "",
+        category: "Beauty",
+        price: "",
+        originalPrice: "",
+        store: "Amazon India",
+        externalUrl: "",
+        image: "",
+        description: "",
+        isTrending: false,
+        isFeatured: false,
+        tags: ""
+      });
+      const [adminTab, setAdminTab] = useState("list"); // 'list' | 'add'
+
+      // Toast notification
+      const [toast, setToast] = useState(null);
+
+      const showToast = (message, type = "success") => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3800);
+      };
+
+      // Load products from API on mount
+      useEffect(() => {
+        fetch('/api/products')
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
+              setProducts(data.products);
+              localStorage.setItem('jv_products', JSON.stringify(data.products));
+            }
+          })
+          .catch(err => {
+            console.log("Using cached/local products catalog:", err);
+          });
+
+        fetch('/api/pins')
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.success && Array.isArray(data.pins)) {
+              setPins(data.pins);
+            }
+          })
+          .catch(() => {});
+      }, []);
+
+      // Synchronize wishlist to localStorage
+      useEffect(() => {
+        localStorage.setItem('jv_wishlist', JSON.stringify(wishlist));
+      }, [wishlist]);
+
+      // Initialize Lucide icons on DOM updates
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+
+      const toggleWishlist = (productId, e) => {
+        if (e) e.stopPropagation();
+        setWishlist(prev => {
+          if (prev.includes(productId)) {
+            showToast("Removed from your saved finds.", "info");
+            return prev.filter(id => id !== productId);
+          } else {
+            showToast("Saved to your Jashviora collection!");
+            return [...prev, productId];
+          }
+        });
+      };
+
+      // Filtered & Sorted Products
+      const filteredProducts = useMemo(() => {
+        return products.filter(product => {
+          const matchCat = selectedCategory === "All" || product.category.toLowerCase() === selectedCategory.toLowerCase();
+          const matchStore = selectedStore === "All" || product.store.toLowerCase() === selectedStore.toLowerCase();
+          const matchQuery = !searchQuery.trim() || 
+            product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (product.tags && product.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
+          return matchCat && matchStore && matchQuery;
+        }).sort((a, b) => {
+          if (sortBy === "price-low") return (a.price || 0) - (b.price || 0);
+          if (sortBy === "price-high") return (b.price || 0) - (a.price || 0);
+          if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
+          // default trending
+          return (b.isTrending === true ? 1 : 0) - (a.isTrending === true ? 1 : 0);
+        });
+      }, [products, selectedCategory, selectedStore, searchQuery, sortBy]);
+
+      // Filtered Pins
+      const filteredPins = useMemo(() => {
+        if (pinCategory === "All") return pins;
+        return pins.filter(p => p.category.toLowerCase() === pinCategory.toLowerCase());
+      }, [pins, pinCategory]);
+
+      // Admin Handlers
+      const handleAdminFormChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setAdminForm(prev => ({
+          ...prev,
+          [name]: type === 'checkbox' ? checked : value
+        }));
+      };
+
+      const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Try server upload first
+        const formData = new FormData();
+        formData.append('file', file);
+        fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.url) {
+            setAdminForm(prev => ({ ...prev, image: data.url }));
+            showToast("Image uploaded successfully!");
+          } else {
+            // Local base64 fallback
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setAdminForm(prev => ({ ...prev, image: reader.result }));
+              showToast("Image loaded as preview!");
+            };
+            reader.readAsDataURL(file);
+          }
+        })
+        .catch(() => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setAdminForm(prev => ({ ...prev, image: reader.result }));
+            showToast("Image loaded offline!");
+          };
+          reader.readAsDataURL(file);
+        });
+      };
+
+      const handleSaveProduct = (e) => {
+        e.preventDefault();
+        if (!adminForm.title.trim()) {
+          showToast("Please enter a product name", "error");
+          return;
+        }
+
+        const payload = {
+          ...adminForm,
+          price: parseFloat(adminForm.price) || 0,
+          originalPrice: adminForm.originalPrice ? parseFloat(adminForm.originalPrice) : null,
+          tags: typeof adminForm.tags === 'string' ? adminForm.tags.split(',').map(s => s.trim()).filter(Boolean) : adminForm.tags
+        };
+
+        if (editingProduct) {
+          // Update via API with fallback
+          fetch(`/api/products/${editingProduct.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              setProducts(prev => prev.map(p => p.id === editingProduct.id ? data.product : p));
+              localStorage.setItem('jv_products', JSON.stringify(products.map(p => p.id === editingProduct.id ? data.product : p)));
+              showToast("Product updated successfully!");
+            }
+          })
+          .catch(() => {
+            // local update
+            const updated = { ...editingProduct, ...payload };
+            setProducts(prev => {
+              const next = prev.map(p => p.id === editingProduct.id ? updated : p);
+              localStorage.setItem('jv_products', JSON.stringify(next));
+              return next;
+            });
+            showToast("Product updated locally!");
+          });
+
+          setEditingProduct(null);
+        } else {
+          // Create new product
+          fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              setProducts(prev => [data.product, ...prev]);
+              localStorage.setItem('jv_products', JSON.stringify([data.product, ...products]));
+              showToast("New product added to catalog!");
+            }
+          })
+          .catch(() => {
+            const newProd = {
+              ...payload,
+              id: `jv-${Date.now()}`,
+              rating: 4.9,
+              reviewsCount: 1,
+              storeBadgeColor: "#49372F",
+              fallbackImage: "/assets/collections/beauty.jpg"
+            };
+            setProducts(prev => {
+              const next = [newProd, ...prev];
+              localStorage.setItem('jv_products', JSON.stringify(next));
+              return next;
+            });
+            showToast("Product saved locally!");
+          });
+        }
+
+        // Reset form
+        setAdminForm({
+          title: "",
+          category: "Beauty",
+          price: "",
+          originalPrice: "",
+          store: "Amazon India",
+          externalUrl: "",
+          image: "",
+          description: "",
+          isTrending: false,
+          isFeatured: false,
+          tags: ""
+        });
+        setAdminTab("list");
+      };
+
+      const startEditProduct = (prod) => {
+        setEditingProduct(prod);
+        setAdminForm({
+          title: prod.title || "",
+          category: prod.category || "Beauty",
+          price: prod.price || "",
+          originalPrice: prod.originalPrice || "",
+          store: prod.store || "Amazon India",
+          externalUrl: prod.externalUrl || "",
+          image: prod.image || "",
+          description: prod.description || "",
+          isTrending: !!prod.isTrending,
+          isFeatured: !!prod.isFeatured,
+          tags: Array.isArray(prod.tags) ? prod.tags.join(", ") : (prod.tags || "")
+        });
+        setAdminTab("add");
+      };
+
+      const handleDeleteProduct = (id) => {
+        if (!confirm("Are you sure you want to delete this product from JASHVIORA?")) return;
+
+        fetch(`/api/products/${id}`, { method: 'DELETE' })
+          .then(() => {
+            setProducts(prev => {
+              const next = prev.filter(p => p.id !== id);
+              localStorage.setItem('jv_products', JSON.stringify(next));
+              return next;
+            });
+            showToast("Product deleted successfully.");
+          })
+          .catch(() => {
+            setProducts(prev => {
+              const next = prev.filter(p => p.id !== id);
+              localStorage.setItem('jv_products', JSON.stringify(next));
+              return next;
+            });
+            showToast("Product deleted from local storage.");
+          });
+      };
+
+      const handleResetCatalog = () => {
+        if (!confirm("Reset entire catalog to original curated defaults? Any custom added items will be restored.")) return;
+        fetch('/api/products/reset', { method: 'POST' })
+          .then(res => res.json())
+          .then(data => {
+            setProducts(DEFAULT_PRODUCTS);
+            localStorage.setItem('jv_products', JSON.stringify(DEFAULT_PRODUCTS));
+            showToast("Catalog successfully reset to default curated finds!");
+          })
+          .catch(() => {
+            setProducts(DEFAULT_PRODUCTS);
+            localStorage.setItem('jv_products', JSON.stringify(DEFAULT_PRODUCTS));
+            showToast("Reset to defaults (offline).");
+          });
+      };
+
+      const exportCatalogJSON = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(products, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `jashviora_catalog_${Date.now()}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showToast("Catalog exported as JSON backup!");
+      };
+
+      // Newsletter form submission
+      const [newsletterEmail, setNewsletterEmail] = useState("");
+      const [newsletterDone, setNewsletterDone] = useState(false);
+
+      const handleNewsletterSubmit = (e) => {
+        e.preventDefault();
+        if (!newsletterEmail || !newsletterEmail.includes("@")) {
+          showToast("Please enter a valid email address.", "error");
+          return;
+        }
+
+        fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: newsletterEmail })
+        })
+        .then(res => res.json())
+        .then(data => {
+          setNewsletterDone(true);
+          showToast(data.message || "Thank you for joining JASHVIORA!");
+          setNewsletterEmail("");
+        })
+        .catch(() => {
+          setNewsletterDone(true);
+          showToast("Welcome to JASHVIORA inspirations!");
+          setNewsletterEmail("");
+        });
+      };
+
+      // Smooth scroll navigation
+      const navigateTo = (sectionId, category = null) => {
+        setIsAdminView(false);
+        setIsMobileMenuOpen(false);
+        if (category) {
+          setSelectedCategory(category);
+        }
+        setTimeout(() => {
+          const el = document.getElementById(sectionId);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 50);
+      };
+
+      // Like pin handler
+      const handleLikePin = (pinId, e) => {
+        e.stopPropagation();
+        setPins(prev => prev.map(p => {
+          if (p.id === pinId) {
+            return { ...p, likes: (p.likes || 0) + 1, userLiked: true };
+          }
+          return p;
+        }));
+        showToast("Inspiration saved to your moodboard!");
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col bg-[#FFF9F2] text-[#49372F] selection:bg-[#EBCFD0] selection:text-[#49372F]">
+          
+          {/* Top Announcement Bar */}
+          <div className="bg-[#49372F] text-[#FFF9F2] text-xs py-2 px-4 text-center tracking-editorial font-medium flex items-center justify-center gap-2">
+            <span>✨ CURATED EDITORIAL DISCOVERY • BEAUTY, FASHION, JEWELLERY & HOME</span>
+            <span className="hidden md:inline text-[#EBCFD0]">• ALL EXTERNAL SHOPPING LINKS VERIFIED</span>
+          </div>
+
+          {/* Sticky Luxury Header */}
+          <header className="sticky top-0 z-40 header-glass transition-all">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+              
+              {/* Brand Logo & Tagline */}
+              <div 
+                onClick={() => { setIsAdminView(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className="cursor-pointer flex items-center gap-3 group"
+              >
+                <div className="w-9 h-9 rounded-full bg-[#EBCFD0]/40 border border-[#E9DCCF] flex items-center justify-center p-1.5 transition-transform group-hover:scale-105">
+                  <img src="/assets/logo-icon.svg" alt="Jashviora Emblem" className="w-full h-full object-contain" />
+                </div>
+                <div>
+                  <span className="font-serif text-2xl sm:text-3xl font-bold tracking-editorial text-[#49372F] block leading-none">
+                    JASHVIORA
+                  </span>
+                  <span className="text-[9px] tracking-wide-editorial uppercase text-[#49372F]/70 block mt-1 font-medium">
+                    Curated Style & Living
+                  </span>
+                </div>
+              </div>
+
+              {/* Desktop Navigation */}
+              <nav className="hidden lg:flex items-center space-x-7 text-sm font-medium tracking-wide">
+                <button onClick={() => navigateTo('home')} className="hover:text-[#C5A059] transition-colors py-1">Home</button>
+                <button onClick={() => navigateTo('trending-finds', 'Beauty')} className="hover:text-[#C5A059] transition-colors py-1">Beauty</button>
+                <button onClick={() => navigateTo('trending-finds', 'Fashion')} className="hover:text-[#C5A059] transition-colors py-1">Fashion</button>
+                <button onClick={() => navigateTo('trending-finds', 'Jewellery')} className="hover:text-[#C5A059] transition-colors py-1">Jewellery</button>
+                <button onClick={() => navigateTo('trending-finds', 'Home Decor')} className="hover:text-[#C5A059] transition-colors py-1">Home Decor</button>
+                <button onClick={() => navigateTo('how-it-works')} className="hover:text-[#C5A059] transition-colors py-1">How It Works</button>
+                <button onClick={() => navigateTo('pinterest-gallery')} className="hover:text-[#C5A059] transition-colors py-1">Inspiration</button>
+                <button onClick={() => navigateTo('about-us')} className="hover:text-[#C5A059] transition-colors py-1">About Us</button>
+                <button onClick={() => setIsContactModalOpen(true)} className="hover:text-[#C5A059] transition-colors py-1">Contact</button>
+              </nav>
+
+              {/* Action Buttons: Search, Wishlist, Curator Studio */}
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                
+                {/* Search Icon */}
+                <button 
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-2.5 rounded-full hover:bg-[#E9DCCF]/50 text-[#49372F] transition-colors relative"
+                  title="Search curated finds"
+                  aria-label="Search"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+
+                {/* Wishlist Saved Items */}
+                <button 
+                  onClick={() => setIsWishlistOpen(true)}
+                  className="p-2.5 rounded-full hover:bg-[#E9DCCF]/50 text-[#49372F] transition-colors relative"
+                  title="View saved wishlist"
+                  aria-label="Wishlist"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill={wishlist.length > 0 ? "#EBCFD0" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                  {wishlist.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#49372F] text-[#FFF9F2] text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </button>
+
+                {/* Admin Management Toggle */}
+                <button
+                  onClick={() => setIsAdminView(!isAdminView)}
+                  className={`text-xs px-3.5 py-2 rounded-full border transition-all flex items-center gap-1.5 ${
+                    isAdminView 
+                      ? 'bg-[#49372F] text-[#FFF9F2] border-[#49372F]' 
+                      : 'bg-white/80 border-[#E9DCCF] text-[#49372F] hover:border-[#49372F]'
+                  }`}
+                  title="Product Management Studio"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span className="hidden sm:inline font-medium">{isAdminView ? "Exit Admin" : "Manage Products"}</span>
+                </button>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="lg:hidden p-2 rounded-lg text-[#49372F] hover:bg-[#E9DCCF]/50"
+                  aria-label="Open Navigation Menu"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                </button>
+              </div>
+
+            </div>
+
+            {/* Mobile Drawer Menu */}
+            {isMobileMenuOpen && (
+              <div className="lg:hidden bg-[#FFF9F2] border-b border-[#E9DCCF] px-6 py-6 space-y-4 animate-fade-in shadow-xl">
+                <div className="flex flex-col space-y-3 font-medium text-base">
+                  <button onClick={() => navigateTo('home')} className="text-left py-2 border-b border-[#E9DCCF]/40">Home</button>
+                  <button onClick={() => navigateTo('trending-finds', 'Beauty')} className="text-left py-2 border-b border-[#E9DCCF]/40 flex justify-between">Beauty <span>→</span></button>
+                  <button onClick={() => navigateTo('trending-finds', 'Fashion')} className="text-left py-2 border-b border-[#E9DCCF]/40 flex justify-between">Fashion <span>→</span></button>
+                  <button onClick={() => navigateTo('trending-finds', 'Jewellery')} className="text-left py-2 border-b border-[#E9DCCF]/40 flex justify-between">Jewellery <span>→</span></button>
+                  <button onClick={() => navigateTo('trending-finds', 'Home Decor')} className="text-left py-2 border-b border-[#E9DCCF]/40 flex justify-between">Home Decor <span>→</span></button>
+                  <button onClick={() => navigateTo('how-it-works')} className="text-left py-2 border-b border-[#E9DCCF]/40">How Jashviora Works</button>
+                  <button onClick={() => navigateTo('pinterest-gallery')} className="text-left py-2 border-b border-[#E9DCCF]/40">Inspiration Gallery</button>
+                  <button onClick={() => navigateTo('about-us')} className="text-left py-2 border-b border-[#E9DCCF]/40">About Jashviora</button>
+                  <button onClick={() => { setIsMobileMenuOpen(false); setIsContactModalOpen(true); }} className="text-left py-2">Contact Us</button>
+                </div>
+                <div className="pt-2">
+                  <button
+                    onClick={() => { setIsMobileMenuOpen(false); setIsAdminView(!isAdminView); }}
+                    className="w-full py-2.5 rounded-full bg-[#49372F] text-[#FFF9F2] text-sm font-medium"
+                  >
+                    {isAdminView ? "Return to Store" : "Open Admin Product Studio"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </header>
+
+          {/* MAIN CONTENT AREA */}
+          <main className="flex-grow">
+            
+            {/* If Admin View is Active */}
+            {isAdminView ? (
+              <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
+                {/* Admin Header */}
+                <div className="bg-white rounded-2xl border border-[#E9DCCF] p-6 sm:p-8 mb-8 shadow-sm">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E9DCCF] pb-6">
+                    <div>
+                      <div className="editorial-ribbon mb-2">CURATOR PORTAL</div>
+                      <h1 className="font-serif text-3xl font-bold text-[#49372F]">Product Management Dashboard</h1>
+                      <p className="text-sm text-[#49372F]/75 mt-1 font-sans">
+                        Easily add, edit, upload images, enter prices, paste affiliate URLs, and manage all external shopping items.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2.5">
+                      <button 
+                        onClick={() => { setEditingProduct(null); setAdminTab("add"); }} 
+                        className="btn-primary text-sm py-2 px-4"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add New Product
+                      </button>
+                      <button 
+                        onClick={exportCatalogJSON}
+                        className="btn-secondary text-sm py-2 px-4"
+                        title="Export JSON backup file"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export Backup
+                      </button>
+                      <button 
+                        onClick={handleResetCatalog}
+                        className="text-xs px-3 py-2 rounded-full border border-red-200 text-red-700 bg-red-50 hover:bg-red-100 transition-colors"
+                      >
+                        Reset Defaults
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Summary Metric Counters */}
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-6">
+                    <div className="bg-[#FFF9F2] p-4 rounded-xl border border-[#E9DCCF]">
+                      <span className="text-xs text-[#49372F]/70 font-medium">Total Products</span>
+                      <p className="font-serif text-2xl font-bold mt-1">{products.length}</p>
+                    </div>
+                    <div className="bg-[#FFF9F2] p-4 rounded-xl border border-[#E9DCCF]">
+                      <span className="text-xs text-[#49372F]/70 font-medium">Beauty</span>
+                      <p className="font-serif text-2xl font-bold mt-1 text-pink-700">
+                        {products.filter(p => p.category === 'Beauty').length}
+                      </p>
+                    </div>
+                    <div className="bg-[#FFF9F2] p-4 rounded-xl border border-[#E9DCCF]">
+                      <span className="text-xs text-[#49372F]/70 font-medium">Fashion</span>
+                      <p className="font-serif text-2xl font-bold mt-1 text-purple-700">
+                        {products.filter(p => p.category === 'Fashion').length}
+                      </p>
+                    </div>
+                    <div className="bg-[#FFF9F2] p-4 rounded-xl border border-[#E9DCCF]">
+                      <span className="text-xs text-[#49372F]/70 font-medium">Jewellery</span>
+                      <p className="font-serif text-2xl font-bold mt-1 text-amber-700">
+                        {products.filter(p => p.category === 'Jewellery').length}
+                      </p>
+                    </div>
+                    <div className="bg-[#FFF9F2] p-4 rounded-xl border border-[#E9DCCF]">
+                      <span className="text-xs text-[#49372F]/70 font-medium">Home Decor</span>
+                      <p className="font-serif text-2xl font-bold mt-1 text-stone-700">
+                        {products.filter(p => p.category === 'Home Decor').length}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tab switch */}
+                <div className="flex border-b border-[#E9DCCF] mb-6">
+                  <button 
+                    onClick={() => setAdminTab("list")}
+                    className={`pb-3 px-5 text-sm font-semibold transition-all border-b-2 ${adminTab === 'list' ? 'border-[#49372F] text-[#49372F]' : 'border-transparent text-[#49372F]/50 hover:text-[#49372F]'}`}
+                  >
+                    All Products Catalog ({products.length})
+                  </button>
+                  <button 
+                    onClick={() => { setAdminTab("add"); }}
+                    className={`pb-3 px-5 text-sm font-semibold transition-all border-b-2 ${adminTab === 'add' ? 'border-[#49372F] text-[#49372F]' : 'border-transparent text-[#49372F]/50 hover:text-[#49372F]'}`}
+                  >
+                    {editingProduct ? `Edit Product: ${editingProduct.title}` : "+ Add Product"}
+                  </button>
+                </div>
+
+                {/* TAB 1: ADD OR EDIT PRODUCT FORM */}
+                {adminTab === 'add' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white p-6 sm:p-8 rounded-2xl border border-[#E9DCCF]">
+                    
+                    {/* Form Left Side */}
+                    <form onSubmit={handleSaveProduct} className="lg:col-span-7 space-y-5">
+                      <h3 className="font-serif text-xl font-bold">
+                        {editingProduct ? "Edit Product Information" : "Add New Curated Item"}
+                      </h3>
+
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                          Product Name *
+                        </label>
+                        <input
+                          type="text"
+                          name="title"
+                          value={adminForm.title}
+                          onChange={handleAdminFormChange}
+                          required
+                          placeholder="e.g. 18K Gold Plated Ribbed Croissant Hoops"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                            Category *
+                          </label>
+                          <select
+                            name="category"
+                            value={adminForm.category}
+                            onChange={handleAdminFormChange}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          >
+                            <option value="Beauty">Beauty & Makeup</option>
+                            <option value="Fashion">Fashion & Dresses</option>
+                            <option value="Jewellery">Jewellery</option>
+                            <option value="Home Decor">Home Decor</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                            Retailer / Shopping Website *
+                          </label>
+                          <select
+                            name="store"
+                            value={adminForm.store}
+                            onChange={handleAdminFormChange}
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          >
+                            <option value="Amazon India">Amazon India</option>
+                            <option value="Nykaa">Nykaa</option>
+                            <option value="Myntra">Myntra</option>
+                            <option value="Flipkart">Flipkart</option>
+                            <option value="Meesho">Meesho</option>
+                            <option value="Zara">Zara</option>
+                            <option value="H&M">H&M</option>
+                            <option value="Other">Other Website</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                            Price (₹ INR) *
+                          </label>
+                          <input
+                            type="number"
+                            name="price"
+                            value={adminForm.price}
+                            onChange={handleAdminFormChange}
+                            required
+                            placeholder="e.g. 1499"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                            Original Price (Optional ₹)
+                          </label>
+                          <input
+                            type="number"
+                            name="originalPrice"
+                            value={adminForm.originalPrice}
+                            onChange={handleAdminFormChange}
+                            placeholder="e.g. 2199"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      {/* External Affiliate / Shopping URL */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <label className="block text-xs font-semibold uppercase tracking-wider text-[#49372F]">
+                            External Shopping / Affiliate URL *
+                          </label>
+                          <span className="text-[11px] text-[#C5A059] font-medium">Opens in new tab when visitor clicks Shop Now</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            name="externalUrl"
+                            value={adminForm.externalUrl}
+                            onChange={handleAdminFormChange}
+                            required
+                            placeholder="https://www.amazon.in/... or https://www.myntra.com/..."
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          />
+                          {adminForm.externalUrl && (
+                            <a 
+                              href={adminForm.externalUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="btn-secondary text-xs px-3 py-2"
+                              title="Test external link"
+                            >
+                              Test ↗
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Image Source: URL or File Upload */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                          Product Image *
+                        </label>
+                        <div className="space-y-3">
+                          <input
+                            type="text"
+                            name="image"
+                            value={adminForm.image}
+                            onChange={handleAdminFormChange}
+                            placeholder="Paste Image URL (e.g. https://images.unsplash.com/...)"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          />
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs text-[#49372F]/60">OR Upload from device:</span>
+                            <label className="cursor-pointer text-xs px-3.5 py-1.5 rounded-lg border border-[#E9DCCF] bg-[#FFF9F2] hover:bg-[#E9DCCF]/50 transition-colors font-medium flex items-center gap-1.5">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                              Choose File
+                              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                          Curator Description / Styling Advice
+                        </label>
+                        <textarea
+                          name="description"
+                          rows="3"
+                          value={adminForm.description}
+                          onChange={handleAdminFormChange}
+                          placeholder="Describe the fabric, texture, aesthetic pairing, and craftsmanship..."
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                        ></textarea>
+                      </div>
+
+                      {/* Tags & Flags */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-[#49372F]">
+                            Tags (comma-separated)
+                          </label>
+                          <input
+                            type="text"
+                            name="tags"
+                            value={adminForm.tags}
+                            onChange={handleAdminFormChange}
+                            placeholder="e.g. Gold Vermeil, Minimal, Everyday"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F] text-sm"
+                          />
+                        </div>
+                        <div className="flex items-center space-x-6 pt-5">
+                          <label className="flex items-center space-x-2 text-xs font-semibold cursor-pointer">
+                            <input
+                              type="checkbox"
+                              name="isTrending"
+                              checked={adminForm.isTrending}
+                              onChange={handleAdminFormChange}
+                              className="rounded text-[#49372F] focus:ring-[#49372F]"
+                            />
+                            <span>Trending Item</span>
+                          </label>
+                          <label className="flex items-center space-x-2 text-xs font-semibold cursor-pointer">
+                            <input
+                              type="checkbox"
+                              name="isFeatured"
+                              checked={adminForm.isFeatured}
+                              onChange={handleAdminFormChange}
+                              className="rounded text-[#49372F] focus:ring-[#49372F]"
+                            />
+                            <span>Editor's Pick</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Submit & Cancel Buttons */}
+                      <div className="flex gap-3 pt-4 border-t border-[#E9DCCF]">
+                        <button type="submit" className="btn-primary text-sm py-2.5 px-6">
+                          {editingProduct ? "Save Changes" : "Publish to Jashviora"}
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => { setEditingProduct(null); setAdminTab("list"); }}
+                          className="btn-secondary text-sm py-2.5 px-6"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Form Right Side: Live Card Preview */}
+                    <div className="lg:col-span-5 bg-[#FFF9F2] p-6 rounded-2xl border border-[#E9DCCF] flex flex-col justify-center">
+                      <span className="text-xs font-semibold text-[#49372F]/60 uppercase tracking-widest block mb-4 text-center">
+                        — Live Product Card Preview —
+                      </span>
+
+                      <div className="luxury-card overflow-hidden bg-white max-w-sm mx-auto w-full">
+                        <div className="relative aspect-square overflow-hidden bg-[#E9DCCF]/30">
+                          <img
+                            src={adminForm.image || "/assets/collections/beauty.jpg"}
+                            alt={adminForm.title || "Preview"}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.target.src = "/assets/collections/beauty.jpg"; }}
+                          />
+                          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-white/90 text-[#49372F] border border-[#E9DCCF]">
+                              {adminForm.category}
+                            </span>
+                          </div>
+                          <div className="absolute top-3 right-3">
+                            <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: adminForm.store === 'Nykaa' ? '#fc2779' : adminForm.store === 'Myntra' ? '#ff3f6c' : '#232f3e' }}>
+                              {adminForm.store}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="p-5 flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-serif text-lg font-bold text-[#49372F] line-clamp-1">
+                              {adminForm.title || "Product Title Goes Here"}
+                            </h4>
+                            <p className="text-xs text-[#49372F]/70 mt-1 line-clamp-2">
+                              {adminForm.description || "Curated description highlighting the beauty and styling recommendations."}
+                            </p>
+                          </div>
+
+                          <div className="mt-4 pt-3 border-t border-[#E9DCCF]/60 flex items-center justify-between">
+                            <div>
+                              <span className="text-xs text-[#49372F]/50 block">Price</span>
+                              <div className="flex items-baseline gap-1.5">
+                                <span className="font-serif text-lg font-bold text-[#49372F]">
+                                  ₹{adminForm.price ? Number(adminForm.price).toLocaleString('en-IN') : "0"}
+                                </span>
+                                {adminForm.originalPrice && (
+                                  <span className="text-xs text-[#49372F]/40 line-through">
+                                    ₹{Number(adminForm.originalPrice).toLocaleString('en-IN')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="btn-primary text-xs py-1.5 px-3 pointer-events-none">
+                              Shop Now ↗
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+
+                {/* TAB 2: PRODUCT TABLE / LIST */}
+                {adminTab === 'list' && (
+                  <div className="bg-white rounded-2xl border border-[#E9DCCF] overflow-hidden shadow-sm">
+                    <div className="p-4 sm:p-6 border-b border-[#E9DCCF] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="relative flex-1 max-w-md">
+                        <input
+                          type="text"
+                          placeholder="Filter catalog by keyword, store, or tag..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/50 focus:outline-none focus:border-[#49372F]"
+                        />
+                        <svg className="absolute left-3 top-2.5 text-[#49372F]/50" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <select
+                          value={selectedCategory}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className="text-xs px-3 py-2 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2] text-[#49372F]"
+                        >
+                          <option value="All">All Categories</option>
+                          <option value="Beauty">Beauty & Makeup</option>
+                          <option value="Fashion">Fashion & Dresses</option>
+                          <option value="Jewellery">Jewellery</option>
+                          <option value="Home Decor">Home Decor</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-[#FFF9F2] text-[11px] uppercase tracking-wider text-[#49372F]/70 border-b border-[#E9DCCF]">
+                          <tr>
+                            <th className="py-3.5 px-4 font-semibold">Product</th>
+                            <th className="py-3.5 px-4 font-semibold">Category</th>
+                            <th className="py-3.5 px-4 font-semibold">Store</th>
+                            <th className="py-3.5 px-4 font-semibold">Price</th>
+                            <th className="py-3.5 px-4 font-semibold">External URL</th>
+                            <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E9DCCF]/50 font-sans">
+                          {filteredProducts.map(p => (
+                            <tr key={p.id} className="hover:bg-[#FFF9F2]/50 transition-colors">
+                              <td className="py-3 px-4">
+                                <div className="flex items-center gap-3">
+                                  <img 
+                                    src={p.image} 
+                                    alt={p.title} 
+                                    className="w-12 h-12 rounded-lg object-cover border border-[#E9DCCF]"
+                                    onError={(e) => { e.target.src = p.fallbackImage || "/assets/collections/beauty.jpg"; }}
+                                  />
+                                  <div>
+                                    <span className="font-medium text-[#49372F] block leading-tight line-clamp-1">{p.title}</span>
+                                    <span className="text-[11px] text-[#49372F]/60 line-clamp-1">{p.description}</span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className="text-xs px-2.5 py-1 rounded-full bg-[#E9DCCF]/40 text-[#49372F]">
+                                  {p.category}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className="text-xs font-semibold px-2 py-0.5 rounded text-white" style={{ backgroundColor: p.store === 'Nykaa' ? '#fc2779' : p.store === 'Myntra' ? '#ff3f6c' : p.store === 'Flipkart' ? '#2874f0' : p.store === 'Meesho' ? '#8b2671' : '#232f3e' }}>
+                                  {p.store}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 font-semibold">
+                                ₹{p.price ? Number(p.price).toLocaleString('en-IN') : '0'}
+                              </td>
+                              <td className="py-3 px-4">
+                                <a 
+                                  href={p.externalUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-xs text-[#C5A059] hover:underline flex items-center gap-1 max-w-[180px] truncate"
+                                  title={p.externalUrl}
+                                >
+                                  <span className="truncate">{p.externalUrl}</span>
+                                  <span>↗</span>
+                                </a>
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => startEditProduct(p)}
+                                    className="p-1.5 rounded-lg hover:bg-[#E9DCCF]/50 text-[#49372F]"
+                                    title="Edit Product"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteProduct(p.id)}
+                                    className="p-1.5 rounded-lg hover:bg-red-50 text-red-600"
+                                    title="Delete Product"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+              </section>
+            ) : (
+              // PUBLIC DISCOVERY WEBSITE
+              <>
+                {/* 1. HERO SECTION (EDITORIAL MAGAZINE STYLE) */}
+                <section id="home" className="relative bg-[#FFF9F2] pt-6 pb-16 sm:py-20 overflow-hidden">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                      
+                      {/* Left: Magazine Typography & Actions */}
+                      <div className="lg:col-span-6 z-10 space-y-6">
+                        <div className="editorial-ribbon">
+                          VOLUME I • EDITORIAL CURATION • 2026
+                        </div>
+
+                        <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#49372F] leading-[1.12]">
+                          YOUR WORLD OF <br className="hidden sm:inline" />
+                          <span className="italic font-normal font-accent text-[#C5A059]">BEAUTY & STYLE</span>
+                        </h1>
+
+                        <p className="text-base sm:text-lg text-[#49372F]/80 leading-relaxed font-sans max-w-xl">
+                          Find inspiration for your beauty, wardrobe and beautiful home. Discover handpicked luxury products, curated festive fashion, timeless minimal jewellery, and serene living aesthetics.
+                        </p>
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-wrap items-center gap-4 pt-2">
+                          <button 
+                            onClick={() => navigateTo('collections')}
+                            className="btn-primary"
+                          >
+                            <span>Explore Collections</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                          </button>
+
+                          <button 
+                            onClick={() => navigateTo('trending-finds')}
+                            className="btn-secondary"
+                          >
+                            <span>Discover More</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                          </button>
+                        </div>
+
+                        {/* Store Badges Reassurance */}
+                        <div className="pt-6 border-t border-[#E9DCCF]">
+                          <span className="text-[11px] uppercase tracking-wider text-[#49372F]/60 font-semibold block mb-3">
+                            Direct Verified Shopping Destinations:
+                          </span>
+                          <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+                            <span className="px-3 py-1 rounded-full bg-white border border-[#E9DCCF] text-[#49372F] flex items-center gap-1.5 shadow-2xs">
+                              <span className="w-2 h-2 rounded-full bg-[#ff9900]"></span> Amazon India
+                            </span>
+                            <span className="px-3 py-1 rounded-full bg-white border border-[#E9DCCF] text-[#49372F] flex items-center gap-1.5 shadow-2xs">
+                              <span className="w-2 h-2 rounded-full bg-[#fc2779]"></span> Nykaa
+                            </span>
+                            <span className="px-3 py-1 rounded-full bg-white border border-[#E9DCCF] text-[#49372F] flex items-center gap-1.5 shadow-2xs">
+                              <span className="w-2 h-2 rounded-full bg-[#ff3f6c]"></span> Myntra
+                            </span>
+                            <span className="px-3 py-1 rounded-full bg-white border border-[#E9DCCF] text-[#49372F] flex items-center gap-1.5 shadow-2xs">
+                              <span className="w-2 h-2 rounded-full bg-[#2874f0]"></span> Flipkart
+                            </span>
+                            <span className="px-3 py-1 rounded-full bg-white border border-[#E9DCCF] text-[#49372F] flex items-center gap-1.5 shadow-2xs">
+                              <span className="w-2 h-2 rounded-full bg-[#8b2671]"></span> Meesho
+                            </span>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      {/* Right: Large Editorial Magazine Lifestyle Photograph */}
+                      <div className="lg:col-span-6 relative">
+                        <div className="relative mx-auto max-w-lg lg:max-w-none">
+                          
+                          {/* Main Hero Frame */}
+                          <div className="relative z-10 rounded-2xl overflow-hidden border border-[#E9DCCF] shadow-2xl bg-white aspect-[4/5] sm:aspect-[4/4.8]">
+                            <img
+                              src="/assets/hero.jpg"
+                              alt="Jashviora Elegant Fashion & Beauty Aesthetic"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=1000&auto=format&fit=crop&q=80";
+                              }}
+                            />
+                            {/* Editorial Badge Over Image */}
+                            <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-white/90 backdrop-blur-md border border-[#E9DCCF] flex items-center justify-between shadow-lg">
+                              <div>
+                                <span className="text-[10px] font-bold tracking-widest uppercase text-[#C5A059] block">
+                                  FESTIVE & LIFESTYLE EDIT
+                                </span>
+                                <h4 className="font-serif text-sm sm:text-base font-bold text-[#49372F]">
+                                  Traditional Couture & Vanity Elegance
+                                </h4>
+                              </div>
+                              <button 
+                                onClick={() => navigateTo('collections')}
+                                className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#49372F] text-[#FFF9F2] hover:bg-[#382923] transition-colors"
+                              >
+                                View Edit
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Decorative Floating Card: Beauty Flat Lay Accent */}
+                          <div className="hidden sm:block absolute -bottom-6 -left-8 z-20 w-44 rounded-xl overflow-hidden border border-[#E9DCCF] bg-white shadow-xl p-2.5">
+                            <img
+                              src="/assets/collections/beauty.jpg"
+                              alt="Beauty Flat Lay"
+                              className="w-full h-28 object-cover rounded-lg mb-2"
+                            />
+                            <span className="text-[10px] font-bold tracking-wider uppercase text-[#49372F]/70 block">
+                              BEAUTY FLAT LAYS
+                            </span>
+                            <span className="text-xs font-serif font-bold text-[#49372F]">
+                              Golden Hour Glow
+                            </span>
+                          </div>
+
+                          {/* Background Glow Element */}
+                          <div className="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-[#EBCFD0]/40 filter blur-3xl pointer-events-none"></div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* 2. EXPLORE OUR COLLECTIONS (4 IMAGE CARDS IN 2x2 OR 4-COL LAYOUT) */}
+                <section id="collections" className="py-20 bg-[#FFFDF9] border-y border-[#E9DCCF]">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    {/* Section Header */}
+                    <div className="text-center max-w-2xl mx-auto mb-14">
+                      <div className="editorial-ribbon mb-3">CURATED DEPARTMENTS</div>
+                      <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#49372F]">
+                        Explore Our Collections
+                      </h2>
+                      <div className="w-16 h-0.5 bg-[#C5A059] mx-auto mt-4 mb-4"></div>
+                      <p className="text-sm sm:text-base text-[#49372F]/75 font-sans">
+                        Immerse yourself in four signature realms of modern femininity, timeless Indian craftsmanship, and refined interior aesthetics.
+                      </p>
+                    </div>
+
+                    {/* 4 Large Collection Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                      
+                      {/* CARD 1: BEAUTY & MAKEUP */}
+                      <div className="collection-card group flex flex-col justify-between bg-white">
+                        <div className="relative aspect-[3/4] overflow-hidden bg-[#E9DCCF]/20">
+                          <img
+                            src="/assets/collections/beauty.jpg"
+                            alt="Beauty & Makeup Collection - Makeup products, brushes, lipstick & skincare arranged aesthetically"
+                            className="collection-img w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                          <div className="absolute top-3 left-3 bg-[#49372F]/80 backdrop-blur-md text-[#FFF9F2] text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full">
+                            COLLECTION 01
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col flex-grow justify-between">
+                          <div>
+                            <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                              Rituals & Vanity
+                            </span>
+                            <h3 className="font-serif text-xl font-bold text-[#49372F] mb-2">
+                              Beauty & Makeup
+                            </h3>
+                            <p className="text-xs text-[#49372F]/75 line-clamp-2 leading-relaxed">
+                              Makeup products, luxury brushes, velvet lipsticks, and glass skincare arranged aesthetically.
+                            </p>
+                          </div>
+                          <div className="mt-6 pt-4 border-t border-[#E9DCCF]/60">
+                            <button
+                              onClick={() => navigateTo('trending-finds', 'Beauty')}
+                              className="w-full btn-primary text-xs py-2.5 px-4"
+                            >
+                              Explore Beauty <span>→</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CARD 2: FASHION & DRESSES */}
+                      <div className="collection-card group flex flex-col justify-between bg-white">
+                        <div className="relative aspect-[3/4] overflow-hidden bg-[#E9DCCF]/20">
+                          <img
+                            src="/assets/collections/fashion.jpg"
+                            alt="Fashion & Dresses Collection - Traditional Indian suits, dresses and fashion styling"
+                            className="collection-img w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                          <div className="absolute top-3 left-3 bg-[#49372F]/80 backdrop-blur-md text-[#FFF9F2] text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full">
+                            COLLECTION 02
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col flex-grow justify-between">
+                          <div>
+                            <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                              Couture & Festive
+                            </span>
+                            <h3 className="font-serif text-xl font-bold text-[#49372F] mb-2">
+                              Fashion & Dresses
+                            </h3>
+                            <p className="text-xs text-[#49372F]/75 line-clamp-2 leading-relaxed">
+                              Elegant traditional Indian suits, pastel lehengas, organza dupattas, and breezy linen styles.
+                            </p>
+                          </div>
+                          <div className="mt-6 pt-4 border-t border-[#E9DCCF]/60">
+                            <button
+                              onClick={() => navigateTo('trending-finds', 'Fashion')}
+                              className="w-full btn-primary text-xs py-2.5 px-4"
+                            >
+                              Explore Fashion <span>→</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CARD 3: JEWELLERY */}
+                      <div className="collection-card group flex flex-col justify-between bg-white">
+                        <div className="relative aspect-[3/4] overflow-hidden bg-[#E9DCCF]/20">
+                          <img
+                            src="/assets/collections/jewellery.jpg"
+                            alt="Jewellery Collection - Minimal gold jewellery, earrings, necklaces and rings"
+                            className="collection-img w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=800&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                          <div className="absolute top-3 left-3 bg-[#49372F]/80 backdrop-blur-md text-[#FFF9F2] text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full">
+                            COLLECTION 03
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col flex-grow justify-between">
+                          <div>
+                            <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                              18K Gold & Pearls
+                            </span>
+                            <h3 className="font-serif text-xl font-bold text-[#49372F] mb-2">
+                              Jewellery
+                            </h3>
+                            <p className="text-xs text-[#49372F]/75 line-clamp-2 leading-relaxed">
+                              Minimal gold jewellery, sculptural croissant earrings, snake chains, and baroque pearl drops.
+                            </p>
+                          </div>
+                          <div className="mt-6 pt-4 border-t border-[#E9DCCF]/60">
+                            <button
+                              onClick={() => navigateTo('trending-finds', 'Jewellery')}
+                              className="w-full btn-primary text-xs py-2.5 px-4"
+                            >
+                              Explore Jewellery <span>→</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CARD 4: HOME DECOR */}
+                      <div className="collection-card group flex flex-col justify-between bg-white">
+                        <div className="relative aspect-[3/4] overflow-hidden bg-[#E9DCCF]/20">
+                          <img
+                            src="/assets/collections/home-decor.jpg"
+                            alt="Home Decor Collection - Beautiful beige bedroom, candles, flowers and aesthetic room decor"
+                            className="collection-img w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                          <div className="absolute top-3 left-3 bg-[#49372F]/80 backdrop-blur-md text-[#FFF9F2] text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full">
+                            COLLECTION 04
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col flex-grow justify-between">
+                          <div>
+                            <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                              Warm Minimal Living
+                            </span>
+                            <h3 className="font-serif text-xl font-bold text-[#49372F] mb-2">
+                              Home Decor
+                            </h3>
+                            <p className="text-xs text-[#49372F]/75 line-clamp-2 leading-relaxed">
+                              Warm beige bedrooms, ceramic ribbed lamps, wavy mirrors, scented candles, and cozy throws.
+                            </p>
+                          </div>
+                          <div className="mt-6 pt-4 border-t border-[#E9DCCF]/60">
+                            <button
+                              onClick={() => navigateTo('trending-finds', 'Home Decor')}
+                              className="w-full btn-primary text-xs py-2.5 px-4"
+                            >
+                              Explore Home Decor <span>→</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* 3. TRENDING FINDS (CURATED SHOPPING SECTION) */}
+                <section id="trending-finds" className="py-20 bg-[#FFF9F2]">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    {/* Header & Filter Controls */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                      <div>
+                        <div className="editorial-ribbon mb-2">CURATED SHOPPING</div>
+                        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#49372F]">
+                          Trending Finds
+                        </h2>
+                        <p className="text-sm text-[#49372F]/75 mt-1 font-sans">
+                          Handpicked lifestyle pieces. Click <strong>Shop Now</strong> to visit the original retailer.
+                        </p>
+                      </div>
+
+                      {/* Store Reassurance Filter */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-semibold text-[#49372F]/60 mr-1">Store:</span>
+                        {["All", "Amazon India", "Nykaa", "Myntra", "Flipkart", "Meesho"].map(store => (
+                          <button
+                            key={store}
+                            onClick={() => setSelectedStore(store)}
+                            className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
+                              selectedStore === store
+                                ? 'bg-[#49372F] text-[#FFF9F2] border-[#49372F]'
+                                : 'bg-white border-[#E9DCCF] text-[#49372F] hover:border-[#49372F]'
+                            }`}
+                          >
+                            {store}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Category Filter Pills & Sort Bar */}
+                    <div className="bg-white p-4 rounded-2xl border border-[#E9DCCF] shadow-xs mb-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      
+                      {/* Category Pills */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {[
+                          { id: "All", label: "All Curations" },
+                          { id: "Beauty", label: "Beauty & Makeup" },
+                          { id: "Fashion", label: "Fashion & Dresses" },
+                          { id: "Jewellery", label: "Jewellery" },
+                          { id: "Home Decor", label: "Home Decor" }
+                        ].map(tab => (
+                          <button
+                            key={tab.id}
+                            onClick={() => setSelectedCategory(tab.id)}
+                            className={`text-xs sm:text-sm px-4 py-2 rounded-full font-medium transition-all ${
+                              selectedCategory === tab.id
+                                ? 'bg-[#EBCFD0] text-[#49372F] font-bold shadow-xs'
+                                : 'text-[#49372F]/70 hover:text-[#49372F] hover:bg-[#FFF9F2]'
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Search & Sort Dropdowns */}
+                      <div className="flex items-center gap-3">
+                        <div className="relative flex-1 sm:w-60">
+                          <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-full border border-[#E9DCCF] bg-[#FFF9F2] focus:outline-none focus:border-[#49372F]"
+                          />
+                          <svg className="absolute left-2.5 top-2 text-[#49372F]/40" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+
+                        <select
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                          className="text-xs px-3 py-1.5 rounded-full border border-[#E9DCCF] bg-[#FFF9F2] text-[#49372F] focus:outline-none"
+                        >
+                          <option value="trending">Sort: Trending</option>
+                          <option value="price-low">Price: Low to High</option>
+                          <option value="price-high">Price: High to Low</option>
+                          <option value="rating">Top Rated</option>
+                        </select>
+                      </div>
+
+                    </div>
+
+                    {/* Product Cards Grid */}
+                    {filteredProducts.length === 0 ? (
+                      <div className="bg-white rounded-2xl border border-[#E9DCCF] p-12 text-center max-w-lg mx-auto">
+                        <div className="w-16 h-16 rounded-full bg-[#EBCFD0]/40 flex items-center justify-center mx-auto mb-4 text-[#49372F]">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <h3 className="font-serif text-xl font-bold mb-2">No matching finds found</h3>
+                        <p className="text-xs text-[#49372F]/70 mb-4">Try clearing your search query or choosing another category or store filter.</p>
+                        <button
+                          onClick={() => { setSelectedCategory("All"); setSelectedStore("All"); setSearchQuery(""); }}
+                          className="btn-secondary text-xs py-2 px-4"
+                        >
+                          Reset Filters
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {filteredProducts.map(product => {
+                          const isSaved = wishlist.includes(product.id);
+                          return (
+                            <div 
+                              key={product.id}
+                              className="luxury-card group flex flex-col justify-between overflow-hidden relative"
+                            >
+                              {/* Product Image Area */}
+                              <div className="relative aspect-square overflow-hidden bg-[#E9DCCF]/20 cursor-pointer" onClick={() => setQuickViewProduct(product)}>
+                                <img
+                                  src={product.image}
+                                  alt={product.title}
+                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                  onError={(e) => {
+                                    e.target.src = product.fallbackImage || "/assets/collections/beauty.jpg";
+                                  }}
+                                />
+
+                                {/* Badges: Store + Trending */}
+                                <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                                  <span 
+                                    className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full text-white shadow-xs"
+                                    style={{ 
+                                      backgroundColor: product.store === 'Nykaa' ? '#fc2779' : 
+                                                       product.store === 'Myntra' ? '#ff3f6c' : 
+                                                       product.store === 'Flipkart' ? '#2874f0' : 
+                                                       product.store === 'Meesho' ? '#8b2671' : '#232f3e' 
+                                    }}
+                                  >
+                                    {product.store}
+                                  </span>
+                                  {product.isTrending && (
+                                    <span className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/95 text-[#49372F] border border-[#E9DCCF] shadow-2xs">
+                                      TRENDING
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Wishlist Heart Icon */}
+                                <button
+                                  onClick={(e) => toggleWishlist(product.id, e)}
+                                  className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all z-10 ${
+                                    isSaved 
+                                      ? 'bg-[#49372F] text-[#EBCFD0]' 
+                                      : 'bg-white/85 text-[#49372F] hover:bg-white hover:scale-110'
+                                  }`}
+                                  title={isSaved ? "Saved" : "Save to wishlist"}
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                                </button>
+
+                                {/* Quick View Overlay Button */}
+                                <div className="absolute inset-x-0 bottom-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <span className="text-[11px] font-medium tracking-wide bg-white/95 backdrop-blur-md text-[#49372F] px-3.5 py-1.5 rounded-full shadow-md border border-[#E9DCCF]">
+                                    Quick View
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Card Content */}
+                              <div className="p-5 flex flex-col flex-grow justify-between">
+                                <div>
+                                  <div className="flex items-center justify-between text-[11px] text-[#49372F]/60 mb-1">
+                                    <span className="uppercase tracking-wider font-semibold">{product.category}</span>
+                                    <span className="flex items-center gap-1 text-[#C5A059] font-medium">
+                                      ★ {product.rating || '4.9'}
+                                    </span>
+                                  </div>
+
+                                  <h3 
+                                    onClick={() => setQuickViewProduct(product)}
+                                    className="font-serif text-base font-bold text-[#49372F] hover:text-[#C5A059] transition-colors cursor-pointer line-clamp-1"
+                                    title={product.title}
+                                  >
+                                    {product.title}
+                                  </h3>
+
+                                  <p className="text-xs text-[#49372F]/75 mt-1.5 line-clamp-2 leading-relaxed">
+                                    {product.description}
+                                  </p>
+                                </div>
+
+                                {/* Price and Action Buttons */}
+                                <div className="mt-4 pt-3 border-t border-[#E9DCCF]/60 flex items-center justify-between">
+                                  <div>
+                                    <span className="text-[10px] uppercase tracking-wider text-[#49372F]/50 block">Price</span>
+                                    <div className="flex items-baseline gap-1.5">
+                                      <span className="font-serif text-base font-bold text-[#49372F]">
+                                        ₹{product.price ? Number(product.price).toLocaleString('en-IN') : '0'}
+                                      </span>
+                                      {product.originalPrice && (
+                                        <span className="text-xs text-[#49372F]/40 line-through">
+                                          ₹{Number(product.originalPrice).toLocaleString('en-IN')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Working External Link: Shop Now */}
+                                  <a
+                                    href={product.externalUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn-primary text-xs py-2 px-3.5"
+                                    title={`Opens ${product.title} on ${product.store}`}
+                                  >
+                                    <span>Shop Now</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                  </a>
+                                </div>
+
+                                {/* Clear external store indication */}
+                                <div className="mt-2 text-center">
+                                  <span className="text-[10px] text-[#49372F]/55 flex items-center justify-center gap-1">
+                                    <span>Redirects safely to original store:</span>
+                                    <strong className="text-[#49372F]">{product.store}</strong>
+                                  </span>
+                                </div>
+
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                  </div>
+                </section>
+
+                {/* 4. HOW JASHVIORA WORKS (VISUAL 3-STEP SECTION) */}
+                <section id="how-it-works" className="py-20 bg-[#FFFDF9] border-y border-[#E9DCCF]">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    <div className="text-center max-w-2xl mx-auto mb-16">
+                      <div className="editorial-ribbon mb-3">SEAMLESS SHOPPING EXPERIENCE</div>
+                      <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#49372F]">
+                        How Jashviora Works
+                      </h2>
+                      <div className="w-16 h-0.5 bg-[#C5A059] mx-auto mt-4 mb-4"></div>
+                      <p className="text-sm sm:text-base text-[#49372F]/75 font-sans">
+                        From aesthetic inspiration to safe external checkout in three simple, transparent steps.
+                      </p>
+                      
+                      {/* Flow Line Badge: DISCOVER → EXPLORE → SHOP */}
+                      <div className="inline-flex items-center gap-2 sm:gap-4 mt-6 px-5 py-2 rounded-full bg-[#FFF9F2] border border-[#E9DCCF] text-xs font-bold tracking-editorial text-[#49372F]">
+                        <span>DISCOVER</span>
+                        <span className="text-[#C5A059]">→</span>
+                        <span>EXPLORE</span>
+                        <span className="text-[#C5A059]">→</span>
+                        <span>SHOP</span>
+                      </div>
+                    </div>
+
+                    {/* 3 Steps Visual Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                      
+                      {/* STEP 1: DISCOVER */}
+                      <div className="step-card p-8 flex flex-col justify-between">
+                        <div>
+                          <div className="w-14 h-14 rounded-2xl bg-[#EBCFD0]/40 border border-[#E9DCCF] flex items-center justify-center text-[#49372F] mb-6">
+                            <span className="font-serif text-xl font-bold">01</span>
+                          </div>
+                          <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                            STEP ONE
+                          </span>
+                          <h3 className="font-serif text-2xl font-bold text-[#49372F] mb-3">
+                            DISCOVER
+                          </h3>
+                          <p className="text-sm text-[#49372F]/80 leading-relaxed font-sans">
+                            Visitors explore beauty, fashion, jewellery and home decor collections curated by stylists who scout the most aesthetic items across Indian and global platforms.
+                          </p>
+                        </div>
+                        <div className="mt-8 pt-4 border-t border-[#E9DCCF]/50 flex items-center text-xs text-[#49372F]/60 gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                          <span>Curated edits updated weekly</span>
+                        </div>
+                      </div>
+
+                      {/* STEP 2: EXPLORE */}
+                      <div className="step-card p-8 flex flex-col justify-between">
+                        <div>
+                          <div className="w-14 h-14 rounded-2xl bg-[#FFF9F2] border border-[#C5A059] flex items-center justify-center text-[#C5A059] mb-6">
+                            <span className="font-serif text-xl font-bold">02</span>
+                          </div>
+                          <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                            STEP TWO
+                          </span>
+                          <h3 className="font-serif text-2xl font-bold text-[#49372F] mb-3">
+                            EXPLORE
+                          </h3>
+                          <p className="text-sm text-[#49372F]/80 leading-relaxed font-sans">
+                            Visitors view curated products, high-resolution aesthetic images, detailed descriptions, styling advice, real pricing in ₹ INR, and verified store ratings.
+                          </p>
+                        </div>
+                        <div className="mt-8 pt-4 border-t border-[#E9DCCF]/50 flex items-center text-xs text-[#49372F]/60 gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h20"></path><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path><path d="m4 8 16-4"></path></svg>
+                          <span>Editorial eye & transparent notes</span>
+                        </div>
+                      </div>
+
+                      {/* STEP 3: SHOP */}
+                      <div className="step-card p-8 flex flex-col justify-between">
+                        <div>
+                          <div className="w-14 h-14 rounded-2xl bg-[#49372F] text-[#FFF9F2] flex items-center justify-center mb-6">
+                            <span className="font-serif text-xl font-bold">03</span>
+                          </div>
+                          <span className="text-[10px] tracking-wide-editorial uppercase text-[#C5A059] font-bold block mb-1">
+                            STEP THREE
+                          </span>
+                          <h3 className="font-serif text-2xl font-bold text-[#49372F] mb-3">
+                            SHOP
+                          </h3>
+                          <p className="text-sm text-[#49372F]/80 leading-relaxed font-sans">
+                            Visitors click <strong>Shop Now</strong> and are redirected to the original external shopping website (Amazon India, Nykaa, Myntra, Flipkart, Meesho) to complete their purchase safely.
+                          </p>
+                        </div>
+                        <div className="mt-8 pt-4 border-t border-[#E9DCCF]/50 flex items-center text-xs text-[#49372F]/60 gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          <span>100% verified external store checkouts</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* 5. PINTEREST INSPIRED SECTION (MASONRY GALLERY) */}
+                <section id="pinterest-gallery" className="py-20 bg-[#FFF9F2]">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                      <div>
+                        <div className="editorial-ribbon mb-2">VISUAL MOODBOARDS</div>
+                        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#49372F]">
+                          Pinterest-Style Inspiration Gallery
+                        </h2>
+                        <p className="text-sm text-[#49372F]/75 mt-1 font-sans">
+                          Aesthetic pins for makeup looks, outfit styling, jewellery stacks, and serene bedroom decoration.
+                        </p>
+                      </div>
+
+                      {/* Pin Filter Tabs */}
+                      <div className="flex flex-wrap gap-2">
+                        {["All", "Makeup looks", "Outfit inspiration", "Jewellery styling", "Bedroom decoration", "Aesthetic lifestyle ideas"].map(cat => (
+                          <button
+                            key={cat}
+                            onClick={() => setPinCategory(cat)}
+                            className={`text-xs px-3.5 py-1.5 rounded-full border transition-all ${
+                              pinCategory === cat
+                                ? 'bg-[#49372F] text-[#FFF9F2] border-[#49372F]'
+                                : 'bg-white border-[#E9DCCF] text-[#49372F] hover:border-[#49372F]'
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Pinterest Masonry Columns Grid */}
+                    <div className="masonry-grid">
+                      {filteredPins.map(pin => (
+                        <div key={pin.id} className="masonry-item group cursor-pointer">
+                          <div className="relative overflow-hidden">
+                            <img
+                              src={pin.image}
+                              alt={pin.title}
+                              className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => { e.target.src = pin.fallbackImage || "/assets/collections/beauty.jpg"; }}
+                            />
+
+                            {/* Pinterest Hover Overlay */}
+                            <div className="pin-overlay absolute inset-0 bg-[#49372F]/40 backdrop-blur-[2px] p-4 flex flex-col justify-between">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-widest uppercase bg-white/90 text-[#49372F] px-2.5 py-1 rounded-full">
+                                  {pin.category}
+                                </span>
+                                <button
+                                  onClick={(e) => handleLikePin(pin.id, e)}
+                                  className="w-8 h-8 rounded-full bg-[#EBCFD0] text-[#49372F] flex items-center justify-center hover:scale-110 transition-transform"
+                                  title="Like Pin"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                                </button>
+                              </div>
+
+                              <div>
+                                <a
+                                  href={pin.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-full py-2 px-3 rounded-full bg-white text-[#49372F] text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-[#FFF9F2] transition-colors shadow-lg"
+                                >
+                                  <span>Explore Inspiration ↗</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Pin Caption */}
+                          <div className="p-4">
+                            <h4 className="font-serif text-sm font-bold text-[#49372F] leading-snug line-clamp-2">
+                              {pin.title}
+                            </h4>
+                            <div className="flex items-center justify-between text-[11px] text-[#49372F]/60 mt-2">
+                              <span>{pin.curator}</span>
+                              <span className="flex items-center gap-1">
+                                ♥ {pin.likes.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-1 mt-2.5">
+                              {pin.tags && pin.tags.map((t, i) => (
+                                <span key={i} className="text-[10px] text-[#C5A059] font-medium">
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
+                </section>
+
+                {/* 6. A LITTLE ABOUT US (SECTION 9) */}
+                <section id="about-us" className="py-20 bg-[#FFFDF9] border-t border-[#E9DCCF]">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                      
+                      {/* Left: Lifestyle Photograph */}
+                      <div className="lg:col-span-5 relative">
+                        <div className="relative rounded-2xl overflow-hidden border border-[#E9DCCF] shadow-xl aspect-[4/5] bg-white">
+                          <img
+                            src="/assets/about.jpg"
+                            alt="Jashviora Aesthetic Lifestyle Photograph"
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&auto=format&fit=crop&q=80";
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#49372F]/50 via-transparent to-transparent"></div>
+                          <div className="absolute bottom-6 left-6 right-6 text-white">
+                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#EBCFD0] block mb-1">
+                              OUR CREATIVE ATELIER
+                            </span>
+                            <p className="font-serif text-lg font-bold">
+                              Curating the Art of Gracious Living
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: About Us Text Content */}
+                      <div className="lg:col-span-7 space-y-6">
+                        <div className="editorial-ribbon">
+                          BRAND STORY
+                        </div>
+
+                        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#49372F] leading-tight">
+                          A LITTLE ABOUT US
+                        </h2>
+
+                        <blockquote className="font-accent italic text-xl sm:text-2xl text-[#49372F] border-l-2 border-[#C5A059] pl-6 py-2 leading-relaxed">
+                          “Jashviora is your little destination for beauty, fashion, jewellery and home inspiration. We bring together beautiful finds and creative ideas to help you discover your personal style and create your dream lifestyle.”
+                        </blockquote>
+
+                        <p className="text-sm sm:text-base text-[#49372F]/80 leading-relaxed font-sans">
+                          Founded with a devotion to elegance, femininity, and understated luxury, Jashviora bridges the gap between boundless online collections and the refined pieces that genuinely resonate with your taste. Whether it is the perfect chikankari suit for a festival, minimal 18k gold vermeil hoops for your daily rotation, or a hand-thrown ceramic lamp for your evening sanctuary, our editors hand-select every piece with care.
+                        </p>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-4 border-t border-[#E9DCCF]">
+                          <div>
+                            <span className="font-serif text-2xl font-bold text-[#49372F] block">100%</span>
+                            <span className="text-xs text-[#49372F]/70 font-medium">Verified External Stores</span>
+                          </div>
+                          <div>
+                            <span className="font-serif text-2xl font-bold text-[#49372F] block">Editor</span>
+                            <span className="text-xs text-[#49372F]/70 font-medium">Curated With Care</span>
+                          </div>
+                          <div>
+                            <span className="font-serif text-2xl font-bold text-[#49372F] block">INR ₹</span>
+                            <span className="text-xs text-[#49372F]/70 font-medium">Transparent Indian Pricing</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2">
+                          <button 
+                            onClick={() => setIsAffiliateModalOpen(true)}
+                            className="text-xs text-[#C5A059] font-semibold hover:underline flex items-center gap-1.5"
+                          >
+                            <span>Read our full Affiliate Disclosure & Editorial Ethics</span>
+                            <span>→</span>
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </section>
+
+                {/* 7. NEWSLETTER SECTION (SECTION 10) */}
+                <section className="py-20 bg-[#FFF9F2] relative overflow-hidden">
+                  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <div className="w-14 h-14 rounded-full bg-[#EBCFD0]/40 border border-[#E9DCCF] flex items-center justify-center mx-auto mb-6">
+                      <img src="/assets/logo-icon.svg" alt="Jashviora" className="w-7 h-7 object-contain" />
+                    </div>
+
+                    <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#49372F] mb-3">
+                      Stay Inspired with Jashviora
+                    </h2>
+
+                    <p className="text-sm sm:text-base text-[#49372F]/75 max-w-lg mx-auto mb-8 font-sans">
+                      Get beautiful finds, lifestyle inspiration and new collections delivered straight to your inbox.
+                    </p>
+
+                    {newsletterDone ? (
+                      <div className="bg-white p-6 rounded-2xl border border-[#E9DCCF] max-w-md mx-auto shadow-sm animate-fade-in">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto mb-3">
+                          ✓
+                        </div>
+                        <h4 className="font-serif font-bold text-lg text-[#49372F]">You are on the list!</h4>
+                        <p className="text-xs text-[#49372F]/70 mt-1">Thank you for joining. Look forward to our next curated edit.</p>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleNewsletterSubmit} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+                        <input
+                          type="email"
+                          required
+                          value={newsletterEmail}
+                          onChange={(e) => setNewsletterEmail(e.target.value)}
+                          placeholder="Enter your email address..."
+                          className="flex-1 px-5 py-3 rounded-full border border-[#E9DCCF] bg-white text-sm focus:outline-none focus:border-[#49372F] shadow-2xs"
+                        />
+                        <button
+                          type="submit"
+                          className="btn-primary text-sm py-3 px-6 whitespace-nowrap"
+                        >
+                          Subscribe
+                        </button>
+                      </form>
+                    )}
+
+                    <span className="text-[11px] text-[#49372F]/50 block mt-4 font-sans">
+                      We respect your inbox. Unsubscribe anytime with one click.
+                    </span>
+                  </div>
+                </section>
+              </>
+            )}
+
+          </main>
+
+          {/* FOOTER */}
+          <footer className="bg-[#49372F] text-[#FFF9F2] pt-16 pb-12 border-t border-[#382923]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-[#FFF9F2]/15">
+                
+                {/* Brand & Mission Column */}
+                <div className="lg:col-span-4 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#EBCFD0]/20 flex items-center justify-center p-1.5">
+                      <img src="/assets/logo-icon.svg" alt="Jashviora" className="w-full h-full object-contain filter invert" />
+                    </div>
+                    <span className="font-serif text-2xl font-bold tracking-editorial text-[#FFF9F2]">
+                      JASHVIORA
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#FFF9F2]/70 leading-relaxed font-sans max-w-sm">
+                    Discover Your Style, Create Your World. Jashviora is a curated lifestyle discovery platform bringing together beauty, fashion, jewellery, and warm home inspiration.
+                  </p>
+                  <div className="pt-2 text-xs text-[#EBCFD0] font-accent italic">
+                    Feminine • Elegant • Minimal • Modern • Classy • Aesthetic • Premium
+                  </div>
+                </div>
+
+                {/* Quick Navigation */}
+                <div className="lg:col-span-2 space-y-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#EBCFD0] block">
+                    Collections
+                  </span>
+                  <ul className="space-y-2 text-xs text-[#FFF9F2]/80">
+                    <li><button onClick={() => navigateTo('trending-finds', 'Beauty')} className="hover:text-white transition-colors">Beauty & Makeup</button></li>
+                    <li><button onClick={() => navigateTo('trending-finds', 'Fashion')} className="hover:text-white transition-colors">Fashion & Dresses</button></li>
+                    <li><button onClick={() => navigateTo('trending-finds', 'Jewellery')} className="hover:text-white transition-colors">Jewellery</button></li>
+                    <li><button onClick={() => navigateTo('trending-finds', 'Home Decor')} className="hover:text-white transition-colors">Home Decor</button></li>
+                    <li><button onClick={() => navigateTo('pinterest-gallery')} className="hover:text-white transition-colors">Inspiration Gallery</button></li>
+                  </ul>
+                </div>
+
+                {/* Company & Legal */}
+                <div className="lg:col-span-3 space-y-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#EBCFD0] block">
+                    Information & Legal
+                  </span>
+                  <ul className="space-y-2 text-xs text-[#FFF9F2]/80">
+                    <li><button onClick={() => navigateTo('about-us')} className="hover:text-white transition-colors">About Us</button></li>
+                    <li><button onClick={() => setIsContactModalOpen(true)} className="hover:text-white transition-colors">Contact</button></li>
+                    <li><button onClick={() => setIsAffiliateModalOpen(true)} className="hover:text-white transition-colors">Affiliate Disclosure</button></li>
+                    <li><button onClick={() => setIsAffiliateModalOpen(true)} className="hover:text-white transition-colors">Privacy Policy</button></li>
+                    <li><button onClick={() => setIsAffiliateModalOpen(true)} className="hover:text-white transition-colors">Terms and Conditions</button></li>
+                    <li><button onClick={() => setIsAdminView(true)} className="text-[#C5A059] hover:underline font-semibold mt-1">Product Management (Admin)</button></li>
+                  </ul>
+                </div>
+
+                {/* Connect & Social */}
+                <div className="lg:col-span-3 space-y-4">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#EBCFD0] block">
+                    Connect With Us
+                  </span>
+                  <p className="text-xs text-[#FFF9F2]/70 leading-relaxed font-sans">
+                    Follow along for daily aesthetic flat lays, festive couture styling, and interior inspiration.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-[#FFF9F2]/10 hover:bg-[#FFF9F2]/20 flex items-center justify-center text-xs transition-colors" title="Pinterest">
+                      Pin
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-[#FFF9F2]/10 hover:bg-[#FFF9F2]/20 flex items-center justify-center text-xs transition-colors" title="Instagram">
+                      IG
+                    </a>
+                    <a href="mailto:hello@jashviora.com" className="w-9 h-9 rounded-full bg-[#FFF9F2]/10 hover:bg-[#FFF9F2]/20 flex items-center justify-center text-xs transition-colors" title="Email">
+                      ✉
+                    </a>
+                  </div>
+                  <div className="text-[11px] text-[#FFF9F2]/50">
+                    Direct inquiries: <a href="mailto:curator@jashviora.com" className="underline hover:text-white">curator@jashviora.com</a>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Affiliate Disclosure Notice & Copyright */}
+              <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-[#FFF9F2]/60 gap-4">
+                <p className="max-w-2xl text-[11px] leading-relaxed">
+                  <strong>Affiliate Disclosure:</strong> Jashviora is an independent discovery platform. We curate products we love. When you buy through our external links, we may earn an affiliate commission at no extra cost to you.
+                </p>
+                <div className="text-center md:text-right whitespace-nowrap">
+                  <span>© 2026 JASHVIORA. All rights reserved.</span>
+                </div>
+              </div>
+
+            </div>
+          </footer>
+
+          {/* ==========================================================================
+              MODALS & DRAWERS
+             ========================================================================== */}
+
+          {/* 1. PRODUCT QUICK VIEW MODAL */}
+          {quickViewProduct && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop animate-fade-in" onClick={() => setQuickViewProduct(null)}>
+              <div 
+                className="bg-white rounded-2xl border border-[#E9DCCF] max-w-2xl w-full overflow-hidden shadow-2xl relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setQuickViewProduct(null)}
+                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/90 border border-[#E9DCCF] flex items-center justify-center text-[#49372F] hover:bg-[#E9DCCF]/50 transition-colors"
+                >
+                  ✕
+                </button>
+
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  {/* Left: Product Image */}
+                  <div className="aspect-square bg-[#FFF9F2] relative">
+                    <img
+                      src={quickViewProduct.image}
+                      alt={quickViewProduct.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.src = quickViewProduct.fallbackImage || "/assets/collections/beauty.jpg"; }}
+                    />
+                    <div className="absolute top-4 left-4">
+                      <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: quickViewProduct.store === 'Nykaa' ? '#fc2779' : quickViewProduct.store === 'Myntra' ? '#ff3f6c' : '#232f3e' }}>
+                        {quickViewProduct.store}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right: Product Details & External Link */}
+                  <div className="p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wider text-[#C5A059] font-bold mb-1">
+                        {quickViewProduct.categoryLabel || quickViewProduct.category}
+                      </div>
+
+                      <h3 className="font-serif text-2xl font-bold text-[#49372F] mb-3">
+                        {quickViewProduct.title}
+                      </h3>
+
+                      <div className="flex items-baseline gap-2 mb-4">
+                        <span className="font-serif text-2xl font-bold text-[#49372F]">
+                          ₹{quickViewProduct.price ? Number(quickViewProduct.price).toLocaleString('en-IN') : '0'}
+                        </span>
+                        {quickViewProduct.originalPrice && (
+                          <span className="text-sm text-[#49372F]/40 line-through">
+                            ₹{Number(quickViewProduct.originalPrice).toLocaleString('en-IN')}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs sm:text-sm text-[#49372F]/80 leading-relaxed font-sans mb-6">
+                        {quickViewProduct.description}
+                      </p>
+
+                      <div className="space-y-2 text-xs text-[#49372F]/70 border-t border-[#E9DCCF] pt-4 mb-6">
+                        <div className="flex justify-between">
+                          <span>Original Retailer:</span>
+                          <strong className="text-[#49372F]">{quickViewProduct.store}</strong>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Curator Rating:</span>
+                          <span className="text-[#C5A059] font-bold">★ {quickViewProduct.rating || '4.9'} / 5.0</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Verified Store Link:</span>
+                          <span className="text-emerald-700 font-semibold">Active & Safe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <a
+                        href={quickViewProduct.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full btn-primary text-sm py-3 flex items-center justify-center gap-2"
+                      >
+                        <span>Visit {quickViewProduct.store} & Shop Now</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                      </a>
+
+                      <button
+                        onClick={(e) => toggleWishlist(quickViewProduct.id, e)}
+                        className="w-full btn-secondary text-xs py-2 flex items-center justify-center gap-1.5"
+                      >
+                        <span>{wishlist.includes(quickViewProduct.id) ? "♥ Saved in Wishlist" : "♡ Save to Wishlist"}</span>
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. WISHLIST DRAWER MODAL */}
+          {isWishlistOpen && (
+            <div className="fixed inset-0 z-50 flex justify-end modal-backdrop animate-fade-in" onClick={() => setIsWishlistOpen(false)}>
+              <div 
+                className="w-full max-w-md bg-[#FFF9F2] h-full shadow-2xl flex flex-col justify-between p-6 sm:p-8 overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div>
+                  <div className="flex items-center justify-between pb-4 border-b border-[#E9DCCF]">
+                    <div>
+                      <h3 className="font-serif text-2xl font-bold text-[#49372F]">Your Saved Finds</h3>
+                      <span className="text-xs text-[#49372F]/60 font-medium">{wishlist.length} items saved</span>
+                    </div>
+                    <button 
+                      onClick={() => setIsWishlistOpen(false)}
+                      className="p-1 rounded-full hover:bg-[#E9DCCF]/50 text-[#49372F]"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {wishlist.length === 0 ? (
+                    <div className="py-16 text-center">
+                      <div className="w-14 h-14 rounded-full bg-[#EBCFD0]/40 flex items-center justify-center mx-auto mb-4 text-[#49372F]">
+                        ♡
+                      </div>
+                      <h4 className="font-serif font-bold text-lg mb-1">Your wishlist is empty</h4>
+                      <p className="text-xs text-[#49372F]/70 mb-6">Explore our curated collections and save items you adore.</p>
+                      <button 
+                        onClick={() => { setIsWishlistOpen(false); navigateTo('trending-finds'); }}
+                        className="btn-primary text-xs py-2 px-4"
+                      >
+                        Explore Trending Finds
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-[#E9DCCF]/50 mt-4 space-y-3">
+                      {products.filter(p => wishlist.includes(p.id)).map(prod => (
+                        <div key={prod.id} className="pt-3 flex gap-3 items-center">
+                          <img 
+                            src={prod.image} 
+                            alt={prod.title} 
+                            className="w-16 h-16 rounded-xl object-cover border border-[#E9DCCF]"
+                            onError={(e) => { e.target.src = prod.fallbackImage || "/assets/collections/beauty.jpg"; }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[10px] uppercase font-bold text-[#C5A059] block">{prod.store}</span>
+                            <h5 className="font-serif text-sm font-bold truncate text-[#49372F]">{prod.title}</h5>
+                            <span className="text-xs font-semibold text-[#49372F]">₹{Number(prod.price).toLocaleString('en-IN')}</span>
+                          </div>
+                          <div className="flex flex-col gap-1 items-end">
+                            <a
+                              href={prod.externalUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[11px] px-2.5 py-1 rounded-full bg-[#49372F] text-white font-medium"
+                            >
+                              Shop ↗
+                            </a>
+                            <button
+                              onClick={() => toggleWishlist(prod.id)}
+                              className="text-[10px] text-red-600 hover:underline"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {wishlist.length > 0 && (
+                  <div className="pt-6 border-t border-[#E9DCCF]">
+                    <button
+                      onClick={() => setWishlist([])}
+                      className="w-full text-xs text-[#49372F]/60 hover:text-red-600 transition-colors py-2 text-center"
+                    >
+                      Clear Saved Wishlist
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 3. LIVE SEARCH MODAL */}
+          {isSearchOpen && (
+            <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 modal-backdrop animate-fade-in" onClick={() => setIsSearchOpen(false)}>
+              <div 
+                className="bg-white rounded-2xl border border-[#E9DCCF] max-w-2xl w-full p-6 shadow-2xl relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center gap-3 border-b border-[#E9DCCF] pb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Search beauty, fashion, jewellery, home decor, or store..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 text-base text-[#49372F] focus:outline-none"
+                  />
+                  <button onClick={() => setIsSearchOpen(false)} className="text-xs text-[#49372F]/60 hover:text-[#49372F]">
+                    ESC
+                  </button>
+                </div>
+
+                {/* Instant Suggestions */}
+                <div className="py-4">
+                  <span className="text-[11px] uppercase font-bold text-[#49372F]/50 tracking-wider block mb-2">
+                    Popular Searches:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {["Brush set", "Lipstick", "Punjabi suit", "Gold hoops", "Table lamp", "Vase", "Chikankari", "Snake chain"].map(term => (
+                      <button
+                        key={term}
+                        onClick={() => { setSearchQuery(term); }}
+                        className="text-xs px-3 py-1 rounded-full bg-[#FFF9F2] border border-[#E9DCCF] text-[#49372F] hover:bg-[#E9DCCF]/50"
+                      >
+                        {term}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Matching Results Preview */}
+                {searchQuery && (
+                  <div className="max-h-72 overflow-y-auto divide-y divide-[#E9DCCF]/40 border-t border-[#E9DCCF] pt-2">
+                    {filteredProducts.slice(0, 5).map(item => (
+                      <div 
+                        key={item.id} 
+                        onClick={() => { setQuickViewProduct(item); setIsSearchOpen(false); }}
+                        className="py-2.5 flex items-center justify-between cursor-pointer hover:bg-[#FFF9F2] px-2 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img src={item.image} alt={item.title} className="w-10 h-10 rounded-lg object-cover" />
+                          <div>
+                            <span className="text-sm font-serif font-bold text-[#49372F] block leading-tight">{item.title}</span>
+                            <span className="text-xs text-[#49372F]/60">{item.category} • {item.store}</span>
+                          </div>
+                        </div>
+                        <span className="font-semibold text-xs text-[#49372F]">₹{Number(item.price).toLocaleString('en-IN')}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+            </div>
+          )}
+
+          {/* 4. CONTACT MODAL */}
+          {isContactModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop animate-fade-in" onClick={() => setIsContactModalOpen(false)}>
+              <div 
+                className="bg-white rounded-2xl border border-[#E9DCCF] max-w-lg w-full p-6 sm:p-8 shadow-2xl relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsContactModalOpen(false)}
+                  className="absolute top-4 right-4 text-[#49372F]/60 hover:text-[#49372F]"
+                >
+                  ✕
+                </button>
+
+                <div className="editorial-ribbon mb-2">GET IN TOUCH</div>
+                <h3 className="font-serif text-2xl font-bold text-[#49372F] mb-1">Contact Jashviora</h3>
+                <p className="text-xs text-[#49372F]/70 mb-6 font-sans">
+                  Have a product curation suggestion, brand collaboration inquiry, or affiliate partnership? We would love to hear from you.
+                </p>
+
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  showToast("Message sent to the JASHVIORA editorial team!");
+                  setIsContactModalOpen(false);
+                }} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-[#49372F]">Your Name</label>
+                    <input type="text" required placeholder="Full Name" className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/40 text-sm focus:outline-none focus:border-[#49372F]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-[#49372F]">Your Email</label>
+                    <input type="email" required placeholder="name@example.com" className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/40 text-sm focus:outline-none focus:border-[#49372F]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-[#49372F]">Subject</label>
+                    <select className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/40 text-sm focus:outline-none focus:border-[#49372F]">
+                      <option>Product Recommendation</option>
+                      <option>Brand Collaboration</option>
+                      <option>Affiliate & Press Inquiry</option>
+                      <option>General Feedback</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider mb-1 text-[#49372F]">Your Message</label>
+                    <textarea rows="3" required placeholder="Write your message here..." className="w-full px-4 py-2.5 rounded-xl border border-[#E9DCCF] bg-[#FFF9F2]/40 text-sm focus:outline-none focus:border-[#49372F]"></textarea>
+                  </div>
+                  <button type="submit" className="w-full btn-primary text-sm py-2.5">
+                    Send Message
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* 5. AFFILIATE & ETHICS DISCLOSURE MODAL */}
+          {isAffiliateModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop animate-fade-in" onClick={() => setIsAffiliateModalOpen(false)}>
+              <div 
+                className="bg-white rounded-2xl border border-[#E9DCCF] max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setIsAffiliateModalOpen(false)}
+                  className="absolute top-4 right-4 text-[#49372F]/60 hover:text-[#49372F]"
+                >
+                  ✕
+                </button>
+
+                <div className="editorial-ribbon mb-2">EDITORIAL TRANSPARENCY</div>
+                <h3 className="font-serif text-2xl font-bold text-[#49372F] mb-4">
+                  Affiliate Disclosure & Terms
+                </h3>
+
+                <div className="space-y-4 text-xs sm:text-sm text-[#49372F]/80 leading-relaxed font-sans">
+                  <p>
+                    <strong>Welcome to JASHVIORA.</strong> We take immense pride in maintaining complete editorial independence and trust with our readers.
+                  </p>
+                  <p>
+                    <strong>How Our Links Work:</strong> When you click on the "Shop Now" button on any product card or inspiration pin, you are directed directly to the respective external retailer (such as Amazon India, Nykaa, Myntra, Flipkart, Meesho, or independent brand stores).
+                  </p>
+                  <p>
+                    <strong>Affiliate Commission:</strong> In some cases, Jashviora participates in affiliate programs (including the Amazon Associates Program and partner affiliate networks). This means we may earn an affiliate commission on qualifying purchases made through our referral links.
+                  </p>
+                  <p>
+                    <strong>No Extra Cost to You:</strong> You will never pay a single rupee extra when using our links. The price remains identical to visiting the store directly.
+                  </p>
+                  <p>
+                    <strong>Editorial Integrity:</strong> We only feature products we genuinely believe bring aesthetic beauty, craftsmanship, and joy to your life. No retailer can buy an endorsement that doesn't meet our standards.
+                  </p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-[#E9DCCF]">
+                  <button 
+                    onClick={() => setIsAffiliateModalOpen(false)}
+                    className="w-full btn-primary text-xs py-2.5"
+                  >
+                    I Understand
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 6. TOAST NOTIFICATION */}
+          {toast && (
+            <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
+              <div className="bg-[#49372F] text-[#FFF9F2] px-5 py-3 rounded-xl shadow-2xl border border-[#E9DCCF]/30 flex items-center gap-3 text-xs sm:text-sm">
+                <span>✨</span>
+                <span>{toast.message}</span>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // Render the React application
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

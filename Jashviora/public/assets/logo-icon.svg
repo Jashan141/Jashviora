@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="#49372F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Elegant Central Lotus Petal -->
+  <path d="M50 18 C46 32, 42 45, 50 68 C58 45, 54 32, 50 18 Z" fill="#EBCFD0" fill-opacity="0.35"/>
+  <!-- Left Inner Petal -->
+  <path d="M50 68 C38 60, 28 42, 33 28 C38 40, 44 54, 50 68 Z" fill="#FFF9F2" fill-opacity="0.7"/>
+  <!-- Right Inner Petal -->
+  <path d="M50 68 C62 60, 72 42, 67 28 C62 40, 56 54, 50 68 Z" fill="#FFF9F2" fill-opacity="0.7"/>
+  <!-- Left Outer Graceful Flourish -->
+  <path d="M50 68 C30 68, 16 52, 20 38 C26 48, 38 60, 50 68 Z" fill="#E9DCCF" fill-opacity="0.5"/>
+  <!-- Right Outer Graceful Flourish -->
+  <path d="M50 68 C70 68, 84 52, 80 38 C74 48, 62 60, 50 68 Z" fill="#E9DCCF" fill-opacity="0.5"/>
+  <!-- Base Stem Arch & Calyx -->
+  <path d="M42 74 C47 70, 53 70, 58 74" stroke="#C5A059" stroke-width="1.5"/>
+  <circle cx="50" cy="74" r="1.5" fill="#49372F"/>
+  <circle cx="50" cy="22" r="1.2" fill="#C5A059"/>
+  <!-- Dainty Sparkle/Stamen Accents -->
+  <circle cx="50" cy="46" r="1" fill="#C5A059"/>
+  <path d="M50 78 L50 86" stroke="#49372F" stroke-width="1.4"/>
+</svg>

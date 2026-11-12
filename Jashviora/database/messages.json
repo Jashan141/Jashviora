@@ -1,0 +1,26 @@
+[
+  {
+    "id": "msg-c0f9b9",
+    "name": "Priya Sharma",
+    "email": "priya@example.com",
+    "subject": "Brand Collaboration",
+    "message": "Love your curated beauty collection!",
+    "receivedAt": "2026-11-12T12:21:55.311800"
+  },
+  {
+    "id": "msg-755191",
+    "name": "Priya Sharma",
+    "email": "priya@example.com",
+    "subject": "Brand Collaboration",
+    "message": "Love your curated beauty collection!",
+    "receivedAt": "2026-11-12T12:22:41.159510+00:00"
+  },
+  {
+    "id": "msg-7eb847",
+    "name": "Priya Sharma",
+    "email": "priya@example.com",
+    "subject": "Brand Collaboration",
+    "message": "Love your curated beauty collection!",
+    "receivedAt": "2026-11-12T12:22:56.366123+00:00"
+  }
+]
